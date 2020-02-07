@@ -96,7 +96,7 @@ where $N$ is the prediction horizon.\\
     \item Solve $\mathbb{P}_N(x)$ and obtain $\underline{u}^*(x)$
     \item Control with $\kappa_N(x)$ such that $x^+=f(x,\kappa_N(x))$
     \item Repeat for $x\coloneqq x^+$
-\end{itemize}\\
+\end{itemize}
 
 \subsection{Constrained Optimization in a nutshell}
 Cost function: $\min F(z)$\\
@@ -143,7 +143,7 @@ i=N-1, N-2, \ldots 0$\\
 Recursive calculation of optimal-cost-to-go $V_i^*$ from behind: \\
 $V_{N}^{*}(x(N))=V_f(x(N))$
 \begin{multline*}
-V_{i}^{*}(x(i))=\min _{u(i)}\Big\{l(x(i), u(i))+V_{i+1}^{*}\left(f(x(i), u(i)) \;| \\u(i) \in \mathbb{U}, x(i) \in \mathbb{X}, f(x(i), u(i)) \in \Xi_{i+1}\Big\}\right.,\\
+V_{i}^{*}(x(i))=\min _{u(i)}\Big\{l(x(i), u(i))+V_{i+1}^{*}\left(f(x(i), u(i))\right) \;| \\u(i) \in \mathbb{U}, x(i) \in \mathbb{X}, f(x(i), u(i)) \in \Xi_{i+1}\Big\},\\
 i=N-1,N-2,\ldots,0
 \end{multline*}
 delivers $u(i)=\mu_{i}^{*}(x(i))$
@@ -151,25 +151,72 @@ delivers $u(i)=\mu_{i}^{*}(x(i))$
 \section{Stability}
 
 \subsection{Stability Concepts}
-$$
-\begin{array}{l}{\text { The equilibrium point } x_{\mathrm{eq}}=0 \text { of } x^{+}=\hat{f}(x) \text { is locally stable, if for all } \varepsilon>0 \text { there exists a } \delta>0 \text { such that }} \\ {\text { for all }\|x(0)\| \leq \delta(\varepsilon), \text { it holds that }\|x(k)\| \leq \varepsilon \text { for all } k>0 .}\end{array}
-$$
-$$
-\begin{array}{l}{\text { It is locally asymptotically stable, if in addition } \lim _{k \rightarrow \infty}\|x(k)\|=0 \text { for } x(0) \text { close to the origin. }} \\ {\text { It is globally asymptotically stable, if in addition } \lim _{k \rightarrow \infty}\|x(k)\|=0 \text { for all } x(0) \in \mathbb{R}^{n} \text { . }} \\ {\text { It is asymptotically stable in } \mathcal{X}, \text { if in addition } \lim _{k \rightarrow \infty}\|x(k)\|=0 \text { for all } x(0) \in \mathcal{X}, \text { where } \mathcal{X} \text { is positive }}\end{array}
-$$
-$$
-\begin{array}{l}{\alpha_{3} \in \mathcal{P} \mathcal{D} \text { exist, such that for all } x \in \mathbb{R}^{n}:} \\ {\text { (1) } \alpha_{1}(\|x\|) \leq V(x) \leq \alpha_{2}(\|x\|)} \\ {\text { (2) } V(f(x))-V(x) \leq-\alpha_{3}(\|x\|)}\end{array}
-$$
+System class: $x^{+}=\Tilde{f}(x)$\\
+Equilibrium point: $x_{eq}=\Tilde{f}(x_{eq})$\\
+\\
+Assumption:\\
+If $\Tilde{f}$ is not continuous, it is at least locally bounded.\\
+\\
+Definition of stability in the sense of Lyapunov:\\
+The equilibrium point $x_{\mathrm{eq}}=0$ of $x^{+}=\hat{f}(x)$ is locally stable, if for all $\varepsilon>0$ there exists a $\delta>0$ such that for all $\|x(0)\| \leq \delta(\varepsilon)$, it holds that $\|x(k)\| \leq \varepsilon$ for all $k>0$.
+\begin{itemize}
+    \item Locally asymptotically stable, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for $x(0)$ close to the origin.
+    \item Globally asymptotically stable, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for all $x(0) \in \mathbb{R}^{n}$.
+    \item Asymptotically stable in $\mathcal{X}$, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for all $x(0) \in \mathcal{X}$, where $\mathcal{X}$ is positive.
+\end{itemize}
+\vspace{0.1cm}\\ 
+Definition of positive invariance:\\
+$\mathcal{X}$ is positive invariant for $x^{+}=\Tilde{f}(x)$, if $\Tilde{f}(x)\in\mathcal{X}$ for all $x\in\mathcal{X}$.\\
+(\textit{Once a system trajectory enters set} $\mathcal{X}$, \textit{it will never leave it again.})\\
+\\
+Definition of comparison functions:
+\begin{itemize}
+    \item A function $\alpha$ is a class $\mathcal{K}$ function, if it is continuous and strictly increasing with $\alpha(0)=0$.
+    \item A function $\alpha$ is a class $\mathcal{K}_{\infty}$ function, if it a class $\mathcal{K}$ function and in addition unbounded.
+    \item A function $\alpha$ is a class $\mathcal{PD}$ (\textit{positive definite}) function, if it is continuous with $\alpha(0)=0$ and $\alpha(x)>0$ for all $x\neq0$.
+\end{itemize}
+\vspace{0.1cm}\\ 
+Lyapunov's direct method:\\
+A function $V\,:\,\mathbb{R}^{n}\:\rightarrow\:\mathbb{R}$ is a global Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$, if $\alpha_1,\alpha_2\in\mathcal{K}_{\infty},\,\alpha_3\in\mathcal{PD}$ exist, such that for all $x\in\mathbb{R}^n$:\\
+(1) Bounded: $\alpha_{1}(\|x\|) \leq V(x) \leq \alpha_{2}(\|x\|)$ \\ 
+(2) Descent: $V(f(x))-V(x) \leq-\alpha_{3}(\|x\|)$\\
+If $V$ is a global Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$, then the equilibrium is globally asymptotically stable.\\
+\\
+Lyapunov's direct method (constrained):\\
+A function $V\,:\,\mathcal{X}\:\rightarrow\:\mathbb{R}$ with $\mathcal{X}$ invariant is a Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$ on $\mathcal{X}$, if $\alpha_1,\alpha_2\in\mathcal{K}_{\infty},\,\alpha_3\in\mathcal{PD}$ exist, such that for all $x\in\mathcal{X}$:\\
+(1) Bounded: $\alpha_{1}(\|x\|) \leq V(x) \leq \alpha_{2}(\|x\|)$ \\ 
+(2) Descent: $V(f(x))-V(x) \leq-\alpha_{3}(\|x\|)$\\
+If $V$ is a Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$ on $\mathcal{X}$, then the equilibrium is asymptotically stable on $\mathcal{X}$.\\
+
+\end{sectionbox}
+\begin{sectionbox}
 
 \subsection{Assumptions for Stability}
-Assumption 3:
-$$
-\begin{array}{l}{l(x, u)>\alpha_{l}(\|x\|) \quad \forall x \in \mathcal{X}_{N}, \forall u \in \mathbb{U}} \\ {J_{f}(x) \leq \alpha_{f}(\|x\|) \quad \forall x \in \mathbb{X}_{f} \text { where } \alpha_{l}, \alpha_{f} \text { are class } \mathcal{K}_{\infty} \text { functions. }}\end{array}
-$$
+Assumption 3:\\
+$l(x, u)>\alpha_{l}(\|x\|) \quad \forall x \in \mathcal{X}_{N}, \forall u \in \mathbb{U}$ \\ 
+$J_{f}(x) \leq \alpha_{f}(\|x\|) \quad \forall x \in \mathbb{X}_{f}$ where $\alpha_{l}, \alpha_{f}$ are class $\mathcal{K}_{\infty}$ functions.\\
+\\
+Assumption 4:\\
+$J_f$ is a Control Lyapunov Function (CLF), that means $J_f(0)=0,\ J_f>0$ and there exists $u\in\mathbb{U}$ such that $J_f(f(x,u))-J_f(x)\leq-l(x,u)\ \forall x\in\mathbb{X}_f$.\\
+If system is CLF, it is feedback stabilizable.\\
+\\
+Assumption 5:\\
+$\mathbb{X}_f$ is control invariant, that means, if $x\in\mathbb{X}_f$ then there exists $u\in\mathbb{U}$ such that $f(x,u)\in\mathbb{X}_f$.\\ 
 
 \subsection{Stability of MPC}
+Under Assumptions 1 to 5, the equilibrium $x_{eq}$ is asymptotically stable in $\mathcal{X}_N$ for $x^{+}=f(x,\kappa_{N}(x))$.\\
+\textit{Proof}: Choose Lyapunov function $V_N(x)=J_N(x,\underline{u}^{*})$ and show property (1) and (2) of Lyapunov direct method.\\
 
 \subsection{Recursive Feasibility}
+Definition: MPC is said to be recursively feasible, if one can assure that there is a solution to $\mathbb{P}_N(x^{+})$ having a solution of $\mathbb{P}_N(x)$.\\
+\\
+Recursive Feasibility:\\
+If $\mathbb{X}_f$ is control invariant, then\\
+\begin{itemize}
+    \item $\mathcal{X}_{j-1}\subseteq\mathcal{X}_{j-1},\;j=1,\ldots,N$
+    \item $\mathcal{X}_{j-1}$ is control invariant, $j=1,\ldots,N$
+    \item MPC is recursively feasible
+\end{itemize}
 
 \end{sectionbox}
 
