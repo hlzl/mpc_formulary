@@ -29,6 +29,9 @@
 
 \section{Basics}
 \begin{sectionbox}
+\begin{emphbox}
+    Griasde
+\end{emphbox}
 \textbf{Compact set}: Subset of Euclidean space being closed (\textit{i.e., containing all its limit points}) and bounded (\textit{i.e., having all its points lie within some fixed distance of each other}).\\
 \textbf{Matrix Inversion}: $A^{-1}=\frac{1}{\det{A}}\cdot\textrm{adj}(A)$
 \\ $\begin{bmatrix}a & b \\ c & d\end{bmatrix}^{-1} = \frac{1}{ad-bc} \begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$
@@ -112,35 +115,40 @@ If $z^{*}$ is minimum then $\nabla_{z} L\left(z^{*}, \mu^{*}\right)=0$ and $\mu^
 \section{Dynamic Programming}
 
 \subsection{Problem Statement}
-$$
-\begin{array}{l}{x(k+1)=f(x(k), u(k)) ; \quad k=0,1,2, \ldots \quad x(0)=x_{0}} \\ {\text { cost } V\left(x_{0}, \underline{u}\right)=\sum_{k=0}^{N-1} l(x(k), u(k))+V_{f}(x(N))} \\ {\text { constraints } x(k) \in \mathbb{X}, k=0,1, \ldots, N-1, x(N) \in \mathbb{X}_{f}, u(k) \in \mathbb{U}, k=1,2, \ldots, N-1} \\ {\text { Find } \underline{u}=\{u(0), u(1), \ldots, u(N-1)\} \text { where } u(k)=\mu_{k}(x(k)) \text { are control laws. }}\end{array}
-$$
-\begin{emphbox}
-    Griasde
-\end{emphbox}
+Time-invariant discrete-time dynamical control system\\
+$x(k+1)=f(x(k), u(k)) ; \quad k=0,1,2, \ldots \quad x(0)=x_{0}$ \\ \\
+Cost: $V\left(x_{0}, \underline{u}\right)=\sum\limits_{k=0}^{N-1} l(x(k), u(k))+V_{f}(x(N))$ \\
+State constraints: $x(k) \in \mathbb{X},\; k=0,1, \ldots, N-1,\; x(N) \in \mathbb{X}_{f}$\\
+Input constraints: $u(k) \in \mathbb{U}, k=1,2, \ldots, N-1$ \\ \\
+Find $\underline{u}=\{u(0), u(1), \ldots, u(N-1)\}$ where $u(k)=\mu_{k}(x(k))$ are control laws.\\
 
 \subsection{Notation}
-$$
-\begin{array}{l}{\text { Cost-to-go: } V_{i}\left(x, \underline{u}^{i}\right)=\sum_{k=i}^{N-1} l(x(k), u(k))+V_{f}(x(N))} \\ {\text { with } \underline{u}^{i}=\{u(i), u(i+1), \ldots, u(N-1)\}} \\ {\text { Optimal cost-to-go: } V_{i}^{*}(x)=\min _{\underline{u}^{i} \in \Upsilon_{i}(x)} V_{i}\left(x, \underline{u}^{i}\right)}\end{array}
-$$
+Cost-to-go: $V_{i}\left(x, \underline{u}^{i}\right)=\sum\limits_{k=i}^{N-1} l(x(k), u(k))+V_{f}(x(N))$ \\
+with $\underline{u}^{i}=\{u(i), u(i+1), \ldots, u(N-1)\}$ \\ \\
+Optimal cost-to-go: $V_{i}^{*}(x)=\min _{\underline{u}^{i} \in \Upsilon_{i}(x)} V_{i}\left(x, \underline{u}^{i}\right)$ \\
 with
-$$
-\begin{aligned} \Upsilon_{i}(x)\coloneqq\left\{\underline{u}^{i} | \text { for initial state } x(i)=x: u(k) \in \mathbb{U}, k=i, \ldots, N-1\right.\\\left.x(k) \in \mathbb{X}, k=i+1, \ldots, N-1 ; x(N) \in \mathbb{X}_{f}\right\} \end{aligned}
-$$
-and
-$$
-\begin{array}{l}{\Xi_{i}\coloneqq\left\{x \in \mathbb{X} | \Upsilon_{i}(x) \neq \emptyset\right\}} \\ {\text { Recursive construction of feasible sets } \Xi_{i} \text { from behind: }} \\ {\Xi_{N}=\mathbb{X}_{f}} \\ {\Xi_{i}=\left\{x(i) \in \mathbb{X} | x(i+1) \in \Xi_{i+1} \text { with } u(i) \in \mathbb{U}\right\}, i=N-1, N-2, \ldots 0}\end{array}
-$$
-
-\subsection{Bellman Recursion}
-$$
-V_{i}^{*}(x(i))=\min _{u(i)}\left\{l(x(i), u(i))+V_{i+1}^{*}\left(f(x(i), u(i)) | u(i) \in \mathbb{U}, x(i) \in \mathbb{X}, f(x(i), u(i)) \in \Xi_{i+1}\right\}\right.
-$$
+\begin{multline*} \Upsilon_{i}(x)\coloneqq\\\left\{\underline{u}^{i} | \text { for initial state } x(i)=x: u(k) \in \mathbb{U}, k=i, \ldots, N-1;\right.\\\left.x(k) \in \mathbb{X}, k=i+1, \ldots, N-1 ; x(N) \in \mathbb{X}_{f}\right\} 
+\end{multline*}
+and $\Xi_{i}\coloneqq\left\{x \in \mathbb{X} | \Upsilon_{i}(x) \neq \emptyset\right\}$ \\
+\\
+Recursive construction of feasible sets $\Xi_{i}$ from behind:\\ 
+$\Xi_{N}=\mathbb{X}_{f}$ \\ 
+$\Xi_{i}=\left\{x(i) \in \mathbb{X} | x(i+1) \in \Xi_{i+1} \text { with } u(i) \in \mathbb{U}\right\},\\
+i=N-1, N-2, \ldots 0$\\
 
 \end{sectionbox}
+\begin{sectionbox}
+
+\subsection{Bellman Recursion}
+Recursive calculation of optimal-cost-to-go $V_i^*$ from behind: \\
+$V_{N}^{*}(x(N))=V_f(x(N))$
+\begin{multline*}
+V_{i}^{*}(x(i))=\min _{u(i)}\Big\{l(x(i), u(i))+V_{i+1}^{*}\left(f(x(i), u(i)) \;| \\u(i) \in \mathbb{U}, x(i) \in \mathbb{X}, f(x(i), u(i)) \in \Xi_{i+1}\Big\}\right.,\\
+i=N-1,N-2,\ldots,0
+\end{multline*}
+delivers $u(i)=\mu_{i}^{*}(x(i))$
 
 \section{Stability}
-\begin{sectionbox}
 
 \subsection{Stability Concepts}
 $$
