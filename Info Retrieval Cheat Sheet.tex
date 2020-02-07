@@ -16,6 +16,8 @@
 \usepackage{dsfont}
 \usepackage{textcomp}
 \usepackage{bbm}
+\usepackage{breqn}
+\usepackage{mathtools}
 % set document information
 \title{Model\\Predictive\\Control}
 
@@ -27,8 +29,9 @@
 
 \section{Basics}
 \begin{sectionbox}
-
-\subsection{Subsection}
+\textbf{Compact set}: Subset of Euclidean space being closed (\textit{i.e., containing all its limit points}) and bounded (\textit{i.e., having all its points lie within some fixed distance of each other}).\\
+\textbf{Matrix Inversion}: $A^{-1}=\frac{1}{\det{A}}\cdot\textrm{adj}(A)$
+\\ $\begin{bmatrix}a & b \\ c & d\end{bmatrix}^{-1} = \frac{1}{ad-bc} \begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$
 
 \end{sectionbox}
 
@@ -36,32 +39,103 @@
 \begin{sectionbox}
 
 \subsection{System Class}
+Time-invariant discrete-time dynamical control system \\
+$x(k+1)=f(x(k), u(k));\quad k=0,1,2,...\quad x(0)=x_0$\\
+with state $x(k)\in\mathbb{R}^n$ and control input $u(k)\in\mathbb{R}^m$.\\
+
+Notation:\\
+${\underline{u}^{N}\coloneqq\{u(0), u(1), \ldots u(N-1)\}} \\ {\underline{x}_{u}^{N}\left(x_{0}\right)\coloneqq\left\{x_{0}, x_{\underline{u}}\left(1, x_{0}\right), \ldots x_{\underline{u}}\left(N, x_{0}\right)\right\}}$ \\ 
+or if context is clear for brevity: \\ ${\underline{x}_{\underline{u}}^{N}\left(x_{0}\right)\coloneqq\left\{x_{0}, x(1), \ldots x(N)\right\}}$
 
 \subsection{Cost Function}
+Infinite Horizon:
+\[J_{\infty}\left(x_{0}, \underline{u}^{\infty}\right)=\sum_{k=0}^{\infty} l\left(x_{\underline{u}}\left(k, x_{0}\right), u(k)\right)\]
+Finite Horizon:
+\[J_{N}\left(x_{0}, \underline{u}^{N}\right)=\sum_{k=0}^{N-1} l\left(x_{\underline{u}}\left(k, x_{0}\right), u(k)\right)+J_{f}\left(x_{\underline{u}}\left(N, x_{0}\right)\right)\]
+with stage cost $l(x,u)$ and target cost $J_f(x)$.
 
 \subsection{Constraints}
+Input constraints: $u(k) \in \mathbb{U}$ \\ 
+State constraints: $x(k) \in \mathbb{X}, k=1,2,3, \ldots ;\; x(N) \in \mathbb{X}_{f}$ \\ \\
+Admissible Controls:  $\mathcal{U}_{N}\left(x_{0}\right)\coloneqq\left\{\underline{u} |\left(x_{0}, \underline{u}\right) \in \mathbb{Z}\right\}$ \\ Feasible Initial Values: $\mathcal{X}_{N}\coloneqq\left\{x_{0} \in \mathbb{X} | \mathcal{U}_{N}\left(x_{0}\right) \neq \emptyset\right\}$\\
+with 
+\begin{multline*}
+\mathbb{Z}_{N}\coloneqq\Big\{\left(x_{0}, \underline{u}\right) | u(k) \in \mathbb{U}, x_{\underline{u}}\left(k, x_{0}\right) \in \mathbb{X}, \\ k=0,1, \ldots, N-1 ; x_{\underline{u}}\left(N, x_{0}\right) \in \mathbb{X}_{f}\Big\}
+\end{multline*}
 
 \subsection{Optimization Problem}
-
-\subsection{Controller}
-
-\subsection{Basic time-invariant MPC algorithm}
-
-\subsection{Constrained Optimization}
+$$
+\mathbb{P}_{N}\left(x_{0}\right): J_{N}^{*}\left(x_{0}\right)=\min _{\underline{u}}\left\{J_{N}\left(x_{0}, \underline{u}\right) | \underline{u} \in \mathcal{U}_{N}\left(x_{0}\right)\right\}
+$$
+\\
+Assumption 1:\\
+$f,\,l,\,J_f$ are continuous with $f(0,0)=0,\; l(0,0)=0,\; J_f(0)=0$.\\
+\\
+Assumption 2:\\
+$\mathbb{X}$ is closed, $\mathbb{X}_f$ and $\mathbb{U}$ are compact and all sets contain the origin.\\
+\\
+Under \textit{Assumption 1} and \textit{Assumption 2}, the optimization problem $\mathbb{P}_N(x_0)$ has a solution for all $x_0\in\mathcal{X}_N$. \\($\rightarrow$ Theorem of Weierstrass: Sets are sequentially compact \textit{and} every bounded sequence of complex numbers contains at least one convergent subsequence.)
 
 \end{sectionbox}
-
-\section{Dynamic Programming}
 \begin{sectionbox}
 
+\subsection{Controller}
+$\kappa_{N}\left(x_{0}\right)=u^{*}\left(0, x_{0}\right)$ \\ 
+with optimal control input $u^{*}\left(0, x_{0}\right)$ from solution of $\mathbb{P}_{N}\left(x_{0}\right)$, \\$\underline{u}^{*}=\left\{u^{*}\left(0, x_{0}\right), u^{*}\left(1, x_{0}\right), \ldots u^{*}\left(N-1, x_{0}\right)\right\}$.\\
+
+\subsection{Basic time-invariant MPC algorithm}
+System: $x^{+}=f(x, u)$\\ 
+Cost: $J(x, \underline{u})=\sum\limits_{k=0}^{N-1} l(x(k), u(k))+J_{f}(x(N))$ \\
+Constraints: $x(k) \in \mathbb{X}, u(k) \in \mathbb{U} \text { for all } k \in \mathbb{N}_{0} \text { and } x(N) \in \mathbb{X}_{f}$ \\
+where $N$ is the prediction horizon.\\
+\begin{itemize}
+    \item Measure $x$, determine $\mathcal{U}_N(x)$
+    \item Solve $\mathbb{P}_N(x)$ and obtain $\underline{u}^*(x)$
+    \item Control with $\kappa_N(x)$ such that $x^+=f(x,\kappa_N(x))$
+    \item Repeat for $x\coloneqq x^+$
+\end{itemize}\\
+
+\subsection{Constrained Optimization in a nutshell}
+Cost function: $\min F(z)$\\
+Equality constraints: $g(z)=0$\\
+Inequality constraints: $h(z)\leq 0$\\
+\\
+\textbf{a)} unconstrained\\
+If $z^*$ is minimum, then $\nabla F(z^*)=0$.\\
+\textbf{b)} equality constrained\\
+Lagrange function $L=F(z)+\lambda^{T} g(z)$ with Lagrange multiplier $\lambda$. \\ 
+If $z^{*}$ is minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}\right)=0$ and $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}\right)=0$. \\
+\textbf{c)} inequality constrained\\
+Lagrange function $L=F(z)+\mu^{T} h(z)$ with KKT multiplier $\mu$. \\
+If $z^{*}$ is minimum then $\nabla_{z} L\left(z^{*}, \mu^{*}\right)=0$ and $\mu^{*} \geq 0, h\left(z^{*}\right) \leq 0$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0$ for all $i$.
+
+\section{Dynamic Programming}
+
 \subsection{Problem Statement}
+$$
+\begin{array}{l}{x(k+1)=f(x(k), u(k)) ; \quad k=0,1,2, \ldots \quad x(0)=x_{0}} \\ {\text { cost } V\left(x_{0}, \underline{u}\right)=\sum_{k=0}^{N-1} l(x(k), u(k))+V_{f}(x(N))} \\ {\text { constraints } x(k) \in \mathbb{X}, k=0,1, \ldots, N-1, x(N) \in \mathbb{X}_{f}, u(k) \in \mathbb{U}, k=1,2, \ldots, N-1} \\ {\text { Find } \underline{u}=\{u(0), u(1), \ldots, u(N-1)\} \text { where } u(k)=\mu_{k}(x(k)) \text { are control laws. }}\end{array}
+$$
 \begin{emphbox}
     Griasde
 \end{emphbox}
 
 \subsection{Notation}
+$$
+\begin{array}{l}{\text { Cost-to-go: } V_{i}\left(x, \underline{u}^{i}\right)=\sum_{k=i}^{N-1} l(x(k), u(k))+V_{f}(x(N))} \\ {\text { with } \underline{u}^{i}=\{u(i), u(i+1), \ldots, u(N-1)\}} \\ {\text { Optimal cost-to-go: } V_{i}^{*}(x)=\min _{\underline{u}^{i} \in \Upsilon_{i}(x)} V_{i}\left(x, \underline{u}^{i}\right)}\end{array}
+$$
+with
+$$
+\begin{aligned} \Upsilon_{i}(x)\coloneqq\left\{\underline{u}^{i} | \text { for initial state } x(i)=x: u(k) \in \mathbb{U}, k=i, \ldots, N-1\right.\\\left.x(k) \in \mathbb{X}, k=i+1, \ldots, N-1 ; x(N) \in \mathbb{X}_{f}\right\} \end{aligned}
+$$
+and
+$$
+\begin{array}{l}{\Xi_{i}\coloneqq\left\{x \in \mathbb{X} | \Upsilon_{i}(x) \neq \emptyset\right\}} \\ {\text { Recursive construction of feasible sets } \Xi_{i} \text { from behind: }} \\ {\Xi_{N}=\mathbb{X}_{f}} \\ {\Xi_{i}=\left\{x(i) \in \mathbb{X} | x(i+1) \in \Xi_{i+1} \text { with } u(i) \in \mathbb{U}\right\}, i=N-1, N-2, \ldots 0}\end{array}
+$$
 
 \subsection{Bellman Recursion}
+$$
+V_{i}^{*}(x(i))=\min _{u(i)}\left\{l(x(i), u(i))+V_{i+1}^{*}\left(f(x(i), u(i)) | u(i) \in \mathbb{U}, x(i) \in \mathbb{X}, f(x(i), u(i)) \in \Xi_{i+1}\right\}\right.
+$$
 
 \end{sectionbox}
 
@@ -69,8 +143,21 @@
 \begin{sectionbox}
 
 \subsection{Stability Concepts}
+$$
+\begin{array}{l}{\text { The equilibrium point } x_{\mathrm{eq}}=0 \text { of } x^{+}=\hat{f}(x) \text { is locally stable, if for all } \varepsilon>0 \text { there exists a } \delta>0 \text { such that }} \\ {\text { for all }\|x(0)\| \leq \delta(\varepsilon), \text { it holds that }\|x(k)\| \leq \varepsilon \text { for all } k>0 .}\end{array}
+$$
+$$
+\begin{array}{l}{\text { It is locally asymptotically stable, if in addition } \lim _{k \rightarrow \infty}\|x(k)\|=0 \text { for } x(0) \text { close to the origin. }} \\ {\text { It is globally asymptotically stable, if in addition } \lim _{k \rightarrow \infty}\|x(k)\|=0 \text { for all } x(0) \in \mathbb{R}^{n} \text { . }} \\ {\text { It is asymptotically stable in } \mathcal{X}, \text { if in addition } \lim _{k \rightarrow \infty}\|x(k)\|=0 \text { for all } x(0) \in \mathcal{X}, \text { where } \mathcal{X} \text { is positive }}\end{array}
+$$
+$$
+\begin{array}{l}{\alpha_{3} \in \mathcal{P} \mathcal{D} \text { exist, such that for all } x \in \mathbb{R}^{n}:} \\ {\text { (1) } \alpha_{1}(\|x\|) \leq V(x) \leq \alpha_{2}(\|x\|)} \\ {\text { (2) } V(f(x))-V(x) \leq-\alpha_{3}(\|x\|)}\end{array}
+$$
 
 \subsection{Assumptions for Stability}
+Assumption 3:
+$$
+\begin{array}{l}{l(x, u)>\alpha_{l}(\|x\|) \quad \forall x \in \mathcal{X}_{N}, \forall u \in \mathbb{U}} \\ {J_{f}(x) \leq \alpha_{f}(\|x\|) \quad \forall x \in \mathbb{X}_{f} \text { where } \alpha_{l}, \alpha_{f} \text { are class } \mathcal{K}_{\infty} \text { functions. }}\end{array}
+$$
 
 \subsection{Stability of MPC}
 
@@ -82,14 +169,30 @@
 \begin{sectionbox}
 
 \subsection{System Class for Linear MPC}
+$$
+\begin{array}{l}{\text { System class } x^{+}=A x+B u} \\ {\text { Cost } J_{N}(x, \underline{u})=\frac{1}{2} \sum_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}} \\ {\text { Constraints } x(k) \in \mathbb{X}, u(k) \in \mathbb{U}, x(N) \in \mathbb{X}_{f}, \text { where } \mathbb{X}, \mathbb{U} \text { and } \mathbb{X}_{f} \text { are convex polytopes }}\end{array}
+$$
 
 \subsection{LQ Control (no constraints, non-receding finite horizon)}
+$$
+\begin{array}{l}{\text { System Class } x^{+}=A x+B u} \\ {\text { Cost } V_{0}\left(x_{0}, u\right)=\frac{1}{2} \sum_{k=1}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}} \\ {\text { Control law } u(k)=K(k) x(k)} \\ {\text { Conile for } k=0, \ldots, N-1} \\ {K(k)=-\left(B^{T} P(k+1) B+R\right)^{-1} B^{T} P(k+1) A \text { and }} \\ {R(k)=-\left(B^{T} P(k+1) A+Q-A^{T} P(k+1) B^{T} P(K+1) B+R\right)^{-1} B^{T} P(k+1) A} \\ {P(k)=A^{T} P(k+1) A+Q-A^{T} P(k+1) B\left(B^{T} P(K+1) B+R\right)^{-1} B^{T} P(k+1) A} \\ {P(k)=P_{f}} \\ {\text { In addition: }} \\ {V_{0}^{*}\left(x_{0}\right)=\frac{1}{2} x_{0}^{T} P(0) x_{0}}\end{array}
+$$
 
 \subsection{LQ Control (no constraints, infinite horizon)}
+$$
+\begin{array}{l}{\text { System Class } x^{+}=A x+B u} \\ {\text { Cost } V(x, \underline{u})=\frac{1}{2} \sum_{k=0}^{\infty}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}} \\ {\text { Control Law } u(k)=K_{\infty} x(k)} \\ {\text { while }} \\ {K_{\infty}=-\left(B^{T} P_{\infty} B+R\right)^{-1} B^{T} P_{\infty} A \text { and }} \\ {P_{\infty}=Q+K_{\infty}^{T} R K_{\infty}+\left(A+B K_{\infty}\right)^{T} P_{\infty}\left(A+B K_{\infty}\right)(\text { Riccati Equation })}\end{array}
+$$
 
 \subsection{MPC (constrained, receding horizon)}
+Stability of equilibrium
+$$
+\begin{array}{l}{\text { unconstrained: } P_{f}=P_{\infty}} \\ {\text { constrained: }} \\ {\text { 1.) } P_{f}=P_{\infty}} \\ {\text { 2.) constraint admissibility: } \mathbb{X}_{f} \subseteq\{x \in \mathbb{X} | K x \in \mathbb{U}\}} \\ {\text { 3.) positive invariance: } x \in \mathbb{X}_{f} \Rightarrow x^{+}=\left(A+B K_{\infty}\right) x \in \mathbb{X}_{f}}\end{array}
+$$
 
 \subsection{Underlying Optimization Problem}
+$$
+J_{N}\left(x_{0}, \underline{u}\right)=\frac{1}{2} \sum_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}
+$$
 
 \end{sectionbox}
 
@@ -98,8 +201,21 @@
 \begin{sectionbox}
 
 \subsection{System Class}
+$$
+\begin{array}{l}{\underline{y}=[\hat{y}(t+1 | t), \hat{y}(t+2 | t), \ldots, \hat{y}(t+N | t)]^{T}} \\ 
+\underline{u}=[\Delta u(t), \Delta u(t+1), \ldots, \Delta u(t+N-1)]^{T}
+\end{array}
+$$
+Cost: $J=\sum_{j=1}^{N} \delta(j)(\hat{y}(t+j | t)-w(t+j))^{2}+\sum_{j=1}^{M} \lambda(j)(\Delta u(t+j-1))
+$
 
 \subsection{Diophantine Equation}
+$$
+G=\left[\begin{array}{cccc}{g_{0}} & {0} & {\dots} & {0} \\ {g_{1}} & {g_{0}} & {\dots} & {0} \\ {\vdots} & {\vdots} & {\vdots} & {\vdots} \\ {g_{N-1}} & {g_{N-2}} & {\dots} & {g_{0}}\end{array}\right], \quad \underline{p}=\underline{F}\left(z^{-1}\right) y(t)+\underline{G}^{\prime}\left(z^{-1}\right) \Delta u(t-1)
+$$
+$$
+\begin{aligned} \underline{G}^{\prime}\left(z^{-1}\right)=&\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right] \\ \underline{F}\left(z^{-1}\right)=\left[F_{1}\left(z^{-1}\right), F_{2}\left(z^{-1}\right), \ldots, F_{N}\left(z^{-1}\right)\right]^{T} \\ G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right) \end{aligned}
+$$
 
 \subsection{QP Problem}
 
@@ -110,10 +226,23 @@
 \begin{sectionbox}
 
 \subsection{Nonlinear Programming (NP)}
+$$
+\begin{array}{l}{\text { If } z^{*} \text { is feasible minimum, then } \nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0, \nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0 \text { and } \mu^{*} \geq 0, h\left(z^{*}\right) \leq 0 \text { and }} \\ {\mu_{i}^{*} h_{i}\left(z^{*}\right)=0 \text { for all } i \text { with Lagrange function } L=F(z)+\lambda^{T} g(z)+\mu^{T} h(z) \text { with multipliers } \lambda \text { and } \mu} \\ {\text { Active Set: } \mathcal{A}=\left\{j | \mu_{j}>0\right\}}\end{array}
+$$
 
 \subsection{Unconstrained Minimization: Newton's Method}
+$$
+z^{(k+1)}=z^{(k)}+\alpha^{(k)} d^{(k)} \text { where } d^{(k)}=-\left(\nabla^{2} F\left(z^{(k)}\right)\right)^{-1} \nabla F\left(z^{(k)}\right) \text { (search direction) }
+$$
 
 \subsection{Constrained Minimization: Quadratic Programming}
+$$
+\left(\begin{array}{ccc}{H} & {E^{T}} & {\left(I^{(k)}\right)^{T}} \\ {E} & {0} & {0} \\ {I^{(k)}} & {0} & {0}\end{array}\right)\left(\begin{array}{l}{z^{(k+1)}} \\ {\lambda^{(k+1)}} \\ {\mu^{(k+1)}}\end{array}\right)=\left(\begin{array}{c}{-c} \\ {-e} \\ {-i^{(k)}}\end{array}\right)
+$$
+Update active set:
+$$
+\begin{array}{l}{\text { When for } j \in \mathcal{A}_{k}: \mu_{j}^{(k+1)}<0, \text { delete constraint } j \text { from active set }} \\ {\text { When for } j \notin \mathcal{A}_{k} I_{j} z^{(k+1)}+i_{j} \geq 0, \text { add constraint } j \text { to active set }} \\ {\text { and thus get } \mathcal{A}_{k+1}}\end{array}
+$$
 
 \subsection{Constrained Minimization: Sequential Quadratic Programming}
 
