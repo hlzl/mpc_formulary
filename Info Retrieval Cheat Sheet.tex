@@ -270,27 +270,56 @@ allows to transform the cost into\\ $J_N(x,\underline{u})=\frac{1}{2}\underline{
 \end{sectionbox}
 
 
-\section{GPC}
+\section{Generalized Predictive Control (GPC)}
 \begin{sectionbox}
 
 \subsection{System Class}
+System class:\\ 
+$$A\left(z^{-1}\right) y(t)=B\left(z^{-1}\right) z^{-d} u(t-1)+C\left(z^{-1}\right) \frac{e(t)}{\Delta}$$
+\begin{itemize}
+    \item Denominator: $A\left(z^{-1}\right)=1+a_{1} z^{-1}+a_{2} z^{-2}+\ldots+a_{n} z^{-n}$
+    \item Denumerator: $B\left(z^{-1}\right)=1+b_{1} z^{-1}+\ldots+b_{m} z^{-m}$, $m<n$
+    \item Shift operator: $z^{-k} y(t)=y(t-k)$
+    \item Dead time: $z^{-d}$, in the following $d=0$
+    \item $e(t)$: white noise with zero mean
+    \item $\Delta=1-z^{-1}$ (for $u(t-1)$. for $u(t)$: $\Delta=1$)
+    \item $C\left(z^{-1}\right)$ for colored noise, in the following $C\left(z^{-1}\right)=1$
+\end{itemize}
+Cost: 
+$$J=\sum_{j=1}^{N} \delta(j)(\underbrace{\hat{y}(t+j | t)}_{\substack{\text{predicted} \\ \text{output}}}-\underbrace{w(t+j)}_{\substack{\text{future ref.} \\ \text{trajectory}}})^{2}+\sum_{j=1}^{M} \lambda(j)(\Delta u(t+j-1))
+$$
+\begin{itemize}
+    \item Horizons: $N$ is prediction horizon, $M$ is control horizon, in the following $M=N$
+    \item Weighting $\delta(j),\ \lambda(j)$
+    \item Control input $\Delta u = u(t)-u(t-1)$
+    \item Prediction from time $t$ to $t+j$:
+\end{itemize}
+$$\hat{y}(t+j | t)=G_{j}(z^{-1})\Delta u(t+j-1)+F_{j}(z^{-1})y(t)
+$$
+
+\subsection{Diophantine Equation}
+$\rightarrow$ Fewer equations than unknown variables\\
+$1=E_{j} z^{-1} \tilde{A}\left(z^{-1}\right)+z^{-j} F_{j}\left(z^{-1}\right)$ with $\tilde{A}=\Delta A$ \\ $E_{j}\left(z^{-1}\right)$: polynomial of degree $j-1$ \\ $F_{j}\left(z^{-1}\right)$: polynomial of degree of $\tilde{A}$ \\ \\
+Prediction:\\ $\underline{y}=\underline{G u}+\underline{p}$ \\
+where the choice of $\underline{y}$ and $\underline{u}$ as:
 $$
 \begin{array}{l}{\underline{y}=[\hat{y}(t+1 | t), \hat{y}(t+2 | t), \ldots, \hat{y}(t+N | t)]^{\top}} \\ 
 \underline{u}=[\Delta u(t), \Delta u(t+1), \ldots, \Delta u(t+N-1)]^{\top}
 \end{array}
 $$
-Cost: $J=\sum_{j=1}^{N} \delta(j)(\hat{y}(t+j | t)-w(t+j))^{2}+\sum_{j=1}^{M} \lambda(j)(\Delta u(t+j-1))
-$
-
-\subsection{Diophantine Equation}
-$$
-G=\left[\begin{array}{cccc}{g_{0}} & {0} & {\dots} & {0} \\ {g_{1}} & {g_{0}} & {\dots} & {0} \\ {\vdots} & {\vdots} & {\vdots} & {\vdots} \\ {g_{N-1}} & {g_{N-2}} & {\dots} & {g_{0}}\end{array}\right], \quad \underline{p}=\underline{F}\left(z^{-1}\right) y(t)+\underline{G}^{\prime}\left(z^{-1}\right) \Delta u(t-1)
-$$
-$$
-\begin{aligned} \underline{G}^{\prime}\left(z^{-1}\right)=&\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right] \\ \underline{F}\left(z^{-1}\right)=\left[F_{1}\left(z^{-1}\right), F_{2}\left(z^{-1}\right), \ldots, F_{N}\left(z^{-1}\right)\right]^{\top} \\ G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right) \end{aligned}
-$$
+defines $G$ and $\underline{p}$:
+$$G=\left[\begin{array}{cccc}{g_{0}} & {0} & {\dots} & {0} \\ {g_{1}} & {g_{0}} & {\dots} & {0} \\ {\vdots} & {\vdots} & {\vdots} & {\vdots} \\ {g_{N-1}} & {g_{N-2}} & {\dots} & {g_{0}}\end{array}\right]$$
+$$\underline{p}=\underline{F}\left(z^{-1}\right) y(t)+\underline{G}^{\prime}\left(z^{-1}\right) \Delta u(t-1)$$
+with\\
+$\underline{G}^{\prime}\left(z^{-1}\right)=&\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right]$\\
+$\underline{F}\left(z^{-1}\right)=\left[F_{1}\left(z^{-1}\right), F_{2}\left(z^{-1}\right), \ldots, F_{N}\left(z^{-1}\right)\right]^{\top}$\\
+$G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right)$\\
+and $g_{j}$ $j$-th coefficients of polynomial $G_{j}$.\\
 
 \subsection{QP Problem}
+Cost: $$J=u\left(G^{T} Q G+R\right) \underline{u}+2(\underline{p}-\underline{w})^{T} Q G \underline{u}+(\underline{p}-\underline{w})^{T} Q(\underline{p}-\underline{w})$$ is minimized by control sequence of future controls \\
+$\underline{u}=-\left(G^{T} Q G+R\right)^{-1} G^{T} Q(\underline{p}-w)$\\
+where only $\underline{u}_{1}=\Delta u(t)$ is applied as control.
 
 \end{sectionbox}
 
