@@ -300,7 +300,7 @@ $$
 \subsection{Diophantine Equation}
 $\rightarrow$ Fewer equations than unknown variables\\
 $1=E_{j} z^{-1} \tilde{A}\left(z^{-1}\right)+z^{-j} F_{j}\left(z^{-1}\right)$ with $\tilde{A}=\Delta A$ \\ $E_{j}\left(z^{-1}\right)$: polynomial of degree $j-1$ \\ $F_{j}\left(z^{-1}\right)$: polynomial of degree of $\tilde{A}$ \\ \\
-Prediction:\\ $\underline{y}=\underline{G u}+\underline{p}$ \\
+Prediction:\\ $\underline{y}=\underline{G u}+\underline{p}$ \quad($\underline{p}$ often denoted as $f$)\\
 where the choice of $\underline{y}$ and $\underline{u}$ as:
 $$
 \begin{array}{l}{\underline{y}=[\hat{y}(t+1 | t), \hat{y}(t+2 | t), \ldots, \hat{y}(t+N | t)]^{\top}} \\ 
@@ -328,28 +328,57 @@ where only $\underline{u}_{1}=\Delta u(t)$ is applied as control.
 \begin{sectionbox}
 
 \subsection{Nonlinear Programming (NP)}
-$$
-\begin{array}{l}{\text { If } z^{*} \text { is feasible minimum, then } \nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0, \nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0 \text { and } \mu^{*} \geq 0, h\left(z^{*}\right) \leq 0 \text { and }} \\ {\mu_{i}^{*} h_{i}\left(z^{*}\right)=0 \text { for all } i \text { with Lagrange function } L=F(z)+\lambda^{\top} g(z)+\mu^{\top} h(z) \text { with multipliers } \lambda \text { and } \mu} \\ {\text { Active Set: } \mathcal{A}=\left\{j | \mu_{j}>0\right\}}\end{array}
-$$
+Cost function: $F(z)$\\
+Equality constraints: $g(z)=0$\\
+Inequality constraints: $h(z)\leq 0$\\
+\\
+Necessary conditions for a minimum:\\
+If $z^{*}$ is feasible minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0$, $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0$ and $\mu^{*} \geq 0$, $h\left(z^{*}\right) \leq 0$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0$ for all $i$ with Lagrange function $L=F(z)+\lambda^{\top} g(z)+\mu^{\top} h(z)$ with multipliers $\lambda$ and $\mu$.\\
+Active Set: $\mathcal{A}=\left\{j | \mu_{j}>0\right\}$\\
 
 \subsection{Unconstrained Minimization: Newton's Method}
-$$
-z^{(k+1)}=z^{(k)}+\alpha^{(k)} d^{(k)} \text { where } d^{(k)}=-\left(\nabla^{2} F\left(z^{(k)}\right)\right)^{-1} \nabla F\left(z^{(k)}\right) \text { (search direction) }
-$$
+Find minimum $z^{*}$ numerically as follows
+\begin{itemize}
+    \item Initialize: Guess $z^{(0)}$ close to $z^{*}$ for $k=0,1,2,\ldots$
+    \item Update (calculate tangent and corresponding root value):\\
+    $z^{(k+1)}=z^{(k)}+\alpha^{(k)} d^{(k)}$ where\\ $d^{(k)}=-\left(\nabla^{2} F\left(z^{(k)}\right)\right)^{-1} \nabla F\left(z^{(k)}\right)$ (search direction)\\
+    and $\alpha^{(k)}=\textrm{argmin}\ F(z^{(k)}+\alpha d^{(k)})$ (line search)
+    \item Stop if $\|\nabla F(z^{(k)})\|<\epsilon_{tol}$
+\end{itemize}\vspace{0.2cm}
 
 \subsection{Constrained Minimization: Quadratic Programming}
-$$
-\left(\begin{array}{ccc}{H} & {E^{\top}} & {\left(I^{(k)}\right)^{\top}} \\ {E} & {0} & {0} \\ {I^{(k)}} & {0} & {0}\end{array}\right)\left(\begin{array}{l}{z^{(k+1)}} \\ {\lambda^{(k+1)}} \\ {\mu^{(k+1)}}\end{array}\right)=\left(\begin{array}{c}{-c} \\ {-e} \\ {-i^{(k)}}\end{array}\right)
-$$
-Update active set:
-$$
-\begin{array}{l}{\text { When for } j \in \mathcal{A}_{k}: \mu_{j}^{(k+1)}<0, \text { delete constraint } j \text { from active set }} \\ {\text { When for } j \notin \mathcal{A}_{k} I_{j} z^{(k+1)}+i_{j} \geq 0, \text { add constraint } j \text { to active set }} \\ {\text { and thus get } \mathcal{A}_{k+1}}\end{array}
-$$
+Applies for QP problem class:\\
+Quadratic cost function: $F(z)=\frac{1}{2}z^{\top}Hz+c^{\top}z$\\
+Linear equality constraints: $g(z)=Ez+e=0$\\
+Liner inequality constraints: $h(z)=Iz+i\leq 0$\\
+\\
+Find minimum $z^{*}$ numerically as follows
+\begin{itemize}
+    \item Initialize: Guess initial active set $\mathcal{A}_0$ for $k=0,1,2,\ldots$
+    \item Update optimization variables:
+\end{itemize}
+$$\left(\begin{array}{ccc}{H} & {E^{\top}} & {\left(I^{(k)}\right)^{\top}} \\ {E} & {0} & {0} \\ {I^{(k)}} & {0} & {0}\end{array}\right)\left(\begin{array}{l}{z^{(k+1)}} \\ {\lambda^{(k+1)}} \\ {\mu^{(k+1)}}\end{array}\right)=\left(\begin{array}{c}{-c} \\ {-e} \\ {-i^{(k)}}\end{array}\right)$$
+where $I^{(k)}z+i^{(k)}\leq 0$ are inequality constraints from active set $\mathcal{A}_k$ that are treated as equality constraints.
+\begin{itemize}
+    \item Update active set:\\
+    When for $j \in \mathcal{A}_{k}: \mu_{j}^{(k+1)}<0$, delete const. $j$ from active set\\
+    When for $j \notin \mathcal{A}_{k} I_{j} z^{(k+1)}+i_{j} \geq 0$, add constraint $j$ to active set and thus get $\mathcal{A}_{k+1}$
+\end{itemize}\vspace{0.2cm}
 
 \subsection{Constrained Minimization: Sequential Quadratic Programming}
+Combine Newton's Methods (linearization of NP problem to obtain QP problem) and QP method (choice of feasible active set of linearized problem).
 
 \subsection{Constrained Minimization: Interior Point}
-
+Cost function: $F(z)$\\
+Equality constraints: $g(z)=0$\\
+Former inequality constraints, now equality constraints: $h(z)+s=0$\\
+New inequality constraints: $s\geq 0$\\
+\\
+Lagrange Function $L=F(z)+y^{\top}g(z)+w^{\top}(h(z)+s)-\mu^{\top}s$\\
+Necessary Conditions that are related to inequality constraints:\\
+$s \geq 0 $, $\mu \geq 0$ and $s^{\top}\mu=0$\\
+\\
+Relax complementary conditions $s^{\top}\mu=0$ by introducing barrier parameter $\epsilon$ to $s^{\top}\mu=\epsilon$ and solve with $\epsilon \rightarrow 0$.
 \end{sectionbox}
 
 
