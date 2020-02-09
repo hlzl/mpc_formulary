@@ -106,10 +106,10 @@ Inequality constraints: $h(z)\leq 0$\\
 \textbf{a)} unconstrained\\
 If $z^*$ is minimum, then $\nabla F(z^*)=0$.\\
 \textbf{b)} equality constrained\\
-Lagrange function $L=F(z)+\lambda^{T} g(z)$ with Lagrange multiplier $\lambda$. \\ 
+Lagrange function $L=F(z)+\lambda^{\top} g(z)$ with Lagrange multiplier $\lambda$. \\ 
 If $z^{*}$ is minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}\right)=0$ and $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}\right)=0$. \\
 \textbf{c)} inequality constrained\\
-Lagrange function $L=F(z)+\mu^{T} h(z)$ with KKT multiplier $\mu$. \\
+Lagrange function $L=F(z)+\mu^{\top} h(z)$ with KKT multiplier $\mu$. \\
 If $z^{*}$ is minimum then $\nabla_{z} L\left(z^{*}, \mu^{*}\right)=0$ and $\mu^{*} \geq 0, h\left(z^{*}\right) \leq 0$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0$ for all $i$.
 
 \section{Dynamic Programming}
@@ -220,45 +220,63 @@ If $\mathbb{X}_f$ is control invariant, then\\
 
 \end{sectionbox}
 
+\newpage
 \section{MPC for Linear Systems}
 \begin{sectionbox}
 
 \subsection{System Class for Linear MPC}
-$$
-\begin{array}{l}{\text { System class } x^{+}=A x+B u} \\ {\text { Cost } J_{N}(x, \underline{u})=\frac{1}{2} \sum_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}} \\ {\text { Constraints } x(k) \in \mathbb{X}, u(k) \in \mathbb{U}, x(N) \in \mathbb{X}_{f}, \text { where } \mathbb{X}, \mathbb{U} \text { and } \mathbb{X}_{f} \text { are convex polytopes }}\end{array}
-$$
+System class: $x^{+}=A x+B u$ \\
+Cost: $J_{N}(x, \underline{u})=\frac{1}{2} \sum\limits_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}$ \\
+Constraints: $x(k) \in \mathbb{X}, u(k) \in \mathbb{U}, x(N) \in \mathbb{X}_{f}$, where $\mathbb{X}$, $\mathbb{U}$ and $\mathbb{X}_{f}$ are convex polytopes
 
 \subsection{LQ Control (no constraints, non-receding finite horizon)}
-$$
-\begin{array}{l}{\text { System Class } x^{+}=A x+B u} \\ {\text { Cost } V_{0}\left(x_{0}, u\right)=\frac{1}{2} \sum_{k=1}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}} \\ {\text { Control law } u(k)=K(k) x(k)} \\ {\text { Conile for } k=0, \ldots, N-1} \\ {K(k)=-\left(B^{T} P(k+1) B+R\right)^{-1} B^{T} P(k+1) A \text { and }} \\ {R(k)=-\left(B^{T} P(k+1) A+Q-A^{T} P(k+1) B^{T} P(K+1) B+R\right)^{-1} B^{T} P(k+1) A} \\ {P(k)=A^{T} P(k+1) A+Q-A^{T} P(k+1) B\left(B^{T} P(K+1) B+R\right)^{-1} B^{T} P(k+1) A} \\ {P(k)=P_{f}} \\ {\text { In addition: }} \\ {V_{0}^{*}\left(x_{0}\right)=\frac{1}{2} x_{0}^{T} P(0) x_{0}}\end{array}
-$$
+System Class: $x^{+}=A x+B u$ \\
+Cost: $$V_{0}\left(x_{0}, u\right)=\frac{1}{2} \sum_{k=1}^{N-1}\underbrace{\|x(k)\|_{Q}^{2}}_{\substack{\text{penalize} \\ \text{bad performance}}}+\underbrace{\|u(k)\|_{R}^{2}}_{\substack{\text{penalize} \\ \text{actuator effort}}}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}$$ \\
+Control law: $u(k)=K(k) x(k)$ \\
+\\
+while for $k=0, \ldots, N-1$, with $P(N)=P_{f}$
+$$K(k)=-\left(B^{\top} P(k+1) B+R\right)^{-1} B^{\top} P(k+1) A$$ and
+\begin{multline*}
+    \quad\ P(k)=A^{\top} P(k+1) A+Q-A^{\top} P(k+1) B\\\left(B^{\top} P(k+1) B+R\right)^{-1} B^{\top} P(k+1) A
+\end{multline*}
+Recursion for the Riccatti Matrix:
+$$P(k)=A^{\top} P(k+1) A+Q-\boldsymbol{K}(k)^{\top}B^{\top} P(k+1)A$$
+In addition:\\ 
+$V_{0}^{*}\left(x_{0}\right)=\frac{1}{2} x_{0}^{\top} P(0) x_{0}$\\
 
 \subsection{LQ Control (no constraints, infinite horizon)}
-$$
-\begin{array}{l}{\text { System Class } x^{+}=A x+B u} \\ {\text { Cost } V(x, \underline{u})=\frac{1}{2} \sum_{k=0}^{\infty}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}} \\ {\text { Control Law } u(k)=K_{\infty} x(k)} \\ {\text { while }} \\ {K_{\infty}=-\left(B^{T} P_{\infty} B+R\right)^{-1} B^{T} P_{\infty} A \text { and }} \\ {P_{\infty}=Q+K_{\infty}^{T} R K_{\infty}+\left(A+B K_{\infty}\right)^{T} P_{\infty}\left(A+B K_{\infty}\right)(\text { Riccati Equation })}\end{array}
-$$
+System Class: $x^{+}=A x+B u$ \\
+Cost: $V(x, \underline{u})=\frac{1}{2} \sum\limits_{k=0}^{\infty}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}$ \\
+Control Law: $u(k)=K_{\infty} x(k)$, while \\ $K_{\infty}=-\left(B^{\top} P_{\infty} B+R\right)^{-1} B^{\top} P_{\infty} A$ and Riccati Equation:\\ 
+${P_{\infty}=Q+K_{\infty}^{\top} R K_{\infty}+\left(A+B K_{\infty}\right)^{\top} P_{\infty}\left(A+B K_{\infty}\right)}$\\
+\\
+Stationary Riccatti Matrix:
+$$P_{\infty}=A^{\top} P_{\infty} A+Q+\boldsymbol{K}_{\infty}^{\top}B^{\top} P_{\infty}A$$
 
 \subsection{MPC (constrained, receding horizon)}
-Stability of equilibrium
-$$
-\begin{array}{l}{\text { unconstrained: } P_{f}=P_{\infty}} \\ {\text { constrained: }} \\ {\text { 1.) } P_{f}=P_{\infty}} \\ {\text { 2.) constraint admissibility: } \mathbb{X}_{f} \subseteq\{x \in \mathbb{X} | K x \in \mathbb{U}\}} \\ {\text { 3.) positive invariance: } x \in \mathbb{X}_{f} \Rightarrow x^{+}=\left(A+B K_{\infty}\right) x \in \mathbb{X}_{f}}\end{array}
-$$
+Stability of equilibrium $x_{eq}=0$ under MPC, if\\
+unconstrained: $P_{f}=P_{\infty}$\\
+constrained:\\
+1.) $P_{f}=P_{\infty}$ \\
+2.) constraint admissibility: $\mathbb{X}_{f} \subseteq\{x \in \mathbb{X} | K x \in \mathbb{U}\}$ \\
+3.) positive invariance: $x \in \mathbb{X}_{f} \Rightarrow x^{+}=\left(A+B K_{\infty}\right) x \in \mathbb{X}_{f}$\\
 
-\subsection{Underlying Optimization Problem}
-$$
-J_{N}\left(x_{0}, \underline{u}\right)=\frac{1}{2} \sum_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}
-$$
+\subsection{Underlying Optimization Problem (QP)}
+Using previews $x(k)=A^{k}x_{0}+A^{k-1}Bu(0)+\ldots+Bu(k-1)$\\
+for all $k$ in horizon in cost function 
+$$J_{N}\left(x_{0}, \underline{u}\right)=\frac{1}{2} \sum\limits_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}$$
+allows to transform the cost into\\ $J_N(x,\underline{u})=\frac{1}{2}\underline{u}^{\top}H(x_0)\underline{u}+c(x_{0})^{\top}\underline{u}+d(x_{0})$ with $\underline{u}\in\mathcal{U}_{N}(x_{0})$\\polytopes QP problem (=Quadratic cost with linear constraints) allows for efficient numerics.
 
 \end{sectionbox}
 
-\newpage
+
 \section{GPC}
 \begin{sectionbox}
 
 \subsection{System Class}
 $$
-\begin{array}{l}{\underline{y}=[\hat{y}(t+1 | t), \hat{y}(t+2 | t), \ldots, \hat{y}(t+N | t)]^{T}} \\ 
-\underline{u}=[\Delta u(t), \Delta u(t+1), \ldots, \Delta u(t+N-1)]^{T}
+\begin{array}{l}{\underline{y}=[\hat{y}(t+1 | t), \hat{y}(t+2 | t), \ldots, \hat{y}(t+N | t)]^{\top}} \\ 
+\underline{u}=[\Delta u(t), \Delta u(t+1), \ldots, \Delta u(t+N-1)]^{\top}
 \end{array}
 $$
 Cost: $J=\sum_{j=1}^{N} \delta(j)(\hat{y}(t+j | t)-w(t+j))^{2}+\sum_{j=1}^{M} \lambda(j)(\Delta u(t+j-1))
@@ -269,7 +287,7 @@ $$
 G=\left[\begin{array}{cccc}{g_{0}} & {0} & {\dots} & {0} \\ {g_{1}} & {g_{0}} & {\dots} & {0} \\ {\vdots} & {\vdots} & {\vdots} & {\vdots} \\ {g_{N-1}} & {g_{N-2}} & {\dots} & {g_{0}}\end{array}\right], \quad \underline{p}=\underline{F}\left(z^{-1}\right) y(t)+\underline{G}^{\prime}\left(z^{-1}\right) \Delta u(t-1)
 $$
 $$
-\begin{aligned} \underline{G}^{\prime}\left(z^{-1}\right)=&\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right] \\ \underline{F}\left(z^{-1}\right)=\left[F_{1}\left(z^{-1}\right), F_{2}\left(z^{-1}\right), \ldots, F_{N}\left(z^{-1}\right)\right]^{T} \\ G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right) \end{aligned}
+\begin{aligned} \underline{G}^{\prime}\left(z^{-1}\right)=&\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right] \\ \underline{F}\left(z^{-1}\right)=\left[F_{1}\left(z^{-1}\right), F_{2}\left(z^{-1}\right), \ldots, F_{N}\left(z^{-1}\right)\right]^{\top} \\ G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right) \end{aligned}
 $$
 
 \subsection{QP Problem}
@@ -282,7 +300,7 @@ $$
 
 \subsection{Nonlinear Programming (NP)}
 $$
-\begin{array}{l}{\text { If } z^{*} \text { is feasible minimum, then } \nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0, \nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0 \text { and } \mu^{*} \geq 0, h\left(z^{*}\right) \leq 0 \text { and }} \\ {\mu_{i}^{*} h_{i}\left(z^{*}\right)=0 \text { for all } i \text { with Lagrange function } L=F(z)+\lambda^{T} g(z)+\mu^{T} h(z) \text { with multipliers } \lambda \text { and } \mu} \\ {\text { Active Set: } \mathcal{A}=\left\{j | \mu_{j}>0\right\}}\end{array}
+\begin{array}{l}{\text { If } z^{*} \text { is feasible minimum, then } \nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0, \nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0 \text { and } \mu^{*} \geq 0, h\left(z^{*}\right) \leq 0 \text { and }} \\ {\mu_{i}^{*} h_{i}\left(z^{*}\right)=0 \text { for all } i \text { with Lagrange function } L=F(z)+\lambda^{\top} g(z)+\mu^{\top} h(z) \text { with multipliers } \lambda \text { and } \mu} \\ {\text { Active Set: } \mathcal{A}=\left\{j | \mu_{j}>0\right\}}\end{array}
 $$
 
 \subsection{Unconstrained Minimization: Newton's Method}
@@ -292,7 +310,7 @@ $$
 
 \subsection{Constrained Minimization: Quadratic Programming}
 $$
-\left(\begin{array}{ccc}{H} & {E^{T}} & {\left(I^{(k)}\right)^{T}} \\ {E} & {0} & {0} \\ {I^{(k)}} & {0} & {0}\end{array}\right)\left(\begin{array}{l}{z^{(k+1)}} \\ {\lambda^{(k+1)}} \\ {\mu^{(k+1)}}\end{array}\right)=\left(\begin{array}{c}{-c} \\ {-e} \\ {-i^{(k)}}\end{array}\right)
+\left(\begin{array}{ccc}{H} & {E^{\top}} & {\left(I^{(k)}\right)^{\top}} \\ {E} & {0} & {0} \\ {I^{(k)}} & {0} & {0}\end{array}\right)\left(\begin{array}{l}{z^{(k+1)}} \\ {\lambda^{(k+1)}} \\ {\mu^{(k+1)}}\end{array}\right)=\left(\begin{array}{c}{-c} \\ {-e} \\ {-i^{(k)}}\end{array}\right)
 $$
 Update active set:
 $$
