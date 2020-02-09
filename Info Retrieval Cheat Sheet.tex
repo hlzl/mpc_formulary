@@ -48,7 +48,7 @@ with state $x(k)\in\mathbb{R}^n$ and control input $u(k)\in\mathbb{R}^m$.\\
 
 Notation:\\
 ${\underline{u}^{N}\coloneqq\{u(0), u(1), \ldots u(N-1)\}} \\ {\underline{x}_{u}^{N}\left(x_{0}\right)\coloneqq\left\{x_{0}, x_{\underline{u}}\left(1, x_{0}\right), \ldots x_{\underline{u}}\left(N, x_{0}\right)\right\}}$ \\ 
-or if context is clear for brevity: \\ ${\underline{x}_{\underline{u}}^{N}\left(x_{0}\right)\coloneqq\left\{x_{0}, x(1), \ldots x(N)\right\}}$
+or if context is clear for brevity: \\ ${\underline{x}_{\underline{u}}^{N}\left(x_{0}\right)\coloneqq\left\{x_{0}, x(1), \ldots x(N)\right\}}$\\
 
 \subsection{Cost Function}
 Infinite Horizon:
@@ -219,6 +219,7 @@ If $\mathbb{X}_f$ is control invariant, then\\
 \end{itemize}
 
 \end{sectionbox}
+\textbf{Notes:}
 
 \newpage
 \section{MPC for Linear Systems}
@@ -227,7 +228,7 @@ If $\mathbb{X}_f$ is control invariant, then\\
 \subsection{System Class for Linear MPC}
 System class: $x^{+}=A x+B u$ \\
 Cost: $J_{N}(x, \underline{u})=\frac{1}{2} \sum\limits_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}$ \\
-Constraints: $x(k) \in \mathbb{X}, u(k) \in \mathbb{U}, x(N) \in \mathbb{X}_{f}$, where $\mathbb{X}$, $\mathbb{U}$ and $\mathbb{X}_{f}$ are convex polytopes
+Constraints: $x(k) \in \mathbb{X}, u(k) \in \mathbb{U}, x(N) \in \mathbb{X}_{f}$, where $\mathbb{X}$, $\mathbb{U}$ and $\mathbb{X}_{f}$ are convex polytopes\\
 
 \subsection{LQ Control (no constraints, non-receding finite horizon)}
 System Class: $x^{+}=A x+B u$ \\
@@ -386,10 +387,20 @@ Relax complementary conditions $s^{\top}\mu=0$ by introducing barrier parameter 
 \begin{sectionbox}
 
 \subsection{Types of Uncertainties}
-
+Parametric uncertainty, modeling errors, measurement noise, etc.\\
+E.g. additive disturbance: $x^{+}=f(x,u)+w$ where $w$ is disturbance and $w\in\mathbb{W}$, where $\mathbb{W}$ is bounded.\\
 \subsection{Robust Stability}
+Under bounded small disturbances, does the state reach a small vicinity of the origin.\\
+Compare formal definitions RGAS or Practical Stability in the literature.\\
+\\
+Nominal Robust Stability only if Lyapunov Function is continuous (e.g. for linear MPC)!\\
 
 \subsection{Tube base MPC for Linear Systems}
+Nominal model: $z^{+}=Az+Bu$\\
+Disturbed (real) model: $x^{+}=Ax+Bu+w$\\
+Use tube $S(k)$, $k=0,1,2,\ldots$ to check constraint admissibility: $S(k)$ is a set such that all possible (apply all possible disturbances!) trajectories $x(k)$ of the disturbed system fulfill $x(k)\in\{z(k) \oplus S(k)\}$\\
+MPC feedback control: $u^{*}=v^{*}+K(x-z)$, where $K$ is found offline. Appropiate choice of $K$ reduces the size of the tube.\\
+Optimize cost to find $v^{*}$ such that $x^{*}$ is constraint admissible by constraint tightening using the tube.
 
 \end{sectionbox}
 \textbf{Notes:}
