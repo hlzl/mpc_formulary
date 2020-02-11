@@ -18,6 +18,7 @@
 \usepackage{bbm}
 \usepackage{breqn}
 \usepackage{mathtools}
+\usepackage{polynom}
 % set document information
 \title{Model\\Predictive\\Control}
 
@@ -29,12 +30,17 @@
 
 \section{Basics}
 \begin{sectionbox}
-\begin{emphbox}
-    Griasde
-\end{emphbox}
 \textbf{Compact set}: Subset of Euclidean space being closed (\textit{i.e., containing all its limit points}) and bounded (\textit{i.e., having all its points lie within some fixed distance of each other}).\\
 \textbf{Matrix Inversion}: $A^{-1}=\frac{1}{\det{A}}\cdot\textrm{adj}(A)$
-\\ $\begin{bmatrix}a & b \\ c & d\end{bmatrix}^{-1} = \frac{1}{ad-bc} \begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$
+$$\begin{bmatrix}a & b \\ c & d\end{bmatrix}^{-1} = \frac{1}{ad-bc} \begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$$
+\textbf{Eigenvalues}: $\det(A-\lambda I)=0$\\
+\textbf{Eigenvectors}: $(A-\lambda I)\cdot v=0$\\
+\textbf{Rule of Sarrus}: $A_{3\times3}=\begin{bmatrix}a_{11} & a_{12} & a_{13} \\ a_{21} & a_{22} & a_{23} \\ a_{31} & a_{32} & a_{33} \end{bmatrix}$
+\begin{multline*}
+    \det(A_{3\times3})=a_{11}a_{22}a_{33}+a_{12}a_{23}a_{31}+a_{13}a_{21}a_{32}\\-a_{31}a_{22}a_{13}-a_{32}a_{23}a_{11}-a_{33}a_{21}a_{12}
+\end{multline*}
+For system equations $y_i=f_i(x)$, you can find $x$ with \textbf{Least Squares}: \\ $$x=\arg \min_{x} \left[\sum\limits_{i=1}^{n}\left(y_i-f_i(x)\right)^2\right]$$
+($\rightarrow$ \textit{Calculate derivative, set to zero and find corresponding value for} $x$)
 
 \end{sectionbox}
 
@@ -45,6 +51,7 @@
 Time-invariant discrete-time dynamical control system \\
 $x(k+1)=f(x(k), u(k));\quad k=0,1,2,...\quad x(0)=x_0$\\
 with state $x(k)\in\mathbb{R}^n$ and control input $u(k)\in\mathbb{R}^m$.\\
+Open loop: $x^{+}=f(x)$ \; $\longleftrightarrow$ \; Closed loop: $x^{+}=f(x,u)$\\
 
 Notation:\\
 ${\underline{u}^{N}\coloneqq\{u(0), u(1), \ldots u(N-1)\}} \\ {\underline{x}_{u}^{N}\left(x_{0}\right)\coloneqq\left\{x_{0}, x_{\underline{u}}\left(1, x_{0}\right), \ldots x_{\underline{u}}\left(N, x_{0}\right)\right\}}$ \\ 
@@ -55,7 +62,13 @@ Infinite Horizon:
 \[J_{\infty}\left(x_{0}, \underline{u}^{\infty}\right)=\sum_{k=0}^{\infty} l\left(x_{\underline{u}}\left(k, x_{0}\right), u(k)\right)\]
 Finite Horizon:
 \[J_{N}\left(x_{0}, \underline{u}^{N}\right)=\sum_{k=0}^{N-1} l\left(x_{\underline{u}}\left(k, x_{0}\right), u(k)\right)+J_{f}\left(x_{\underline{u}}\left(N, x_{0}\right)\right)\]
-with stage cost $l(x,u)$ and target cost $J_f(x)$.
+with stage cost $l(x,u)$ and target cost $J_f(x)$.\\
+\\
+Matrix form:
+\[J(x,\underline{u})=\frac{1}{2}\underline{u}^{\top}\mathbf{H}\underline{u}+c(x)^{\top}\underline{u}+d(x)\]
+
+\end{sectionbox}
+\begin{sectionbox}
 
 \subsection{Constraints}
 Input constraints: $u(k) \in \mathbb{U}$ \\ 
@@ -79,9 +92,6 @@ $\mathbb{X}$ is closed, $\mathbb{X}_f$ and $\mathbb{U}$ are compact and all sets
 \\
 Under \textit{Assumption 1} and \textit{Assumption 2}, the optimization problem $\mathbb{P}_N(x_0)$ has a solution for all $x_0\in\mathcal{X}_N$. \\($\rightarrow$ Theorem of Weierstrass: Sets are sequentially compact \textit{and} every bounded sequence of complex numbers contains at least one convergent subsequence.)
 
-\end{sectionbox}
-\begin{sectionbox}
-
 \subsection{Controller}
 $\kappa_{N}\left(x_{0}\right)=u^{*}\left(0, x_{0}\right)$ \\ 
 with optimal control input $u^{*}\left(0, x_{0}\right)$ from solution of $\mathbb{P}_{N}\left(x_{0}\right)$, \\$\underline{u}^{*}=\left\{u^{*}\left(0, x_{0}\right), u^{*}\left(1, x_{0}\right), \ldots u^{*}\left(N-1, x_{0}\right)\right\}$.\\
@@ -90,13 +100,13 @@ with optimal control input $u^{*}\left(0, x_{0}\right)$ from solution of $\mathb
 System: $x^{+}=f(x, u)$\\ 
 Cost: $J(x, \underline{u})=\sum\limits_{k=0}^{N-1} l(x(k), u(k))+J_{f}(x(N))$ \\
 Constraints: $x(k) \in \mathbb{X}, u(k) \in \mathbb{U} \text { for all } k \in \mathbb{N}_{0} \text { and } x(N) \in \mathbb{X}_{f}$ \\
-where $N$ is the prediction horizon.\\
+where $N$ is the prediction horizon.
 \begin{itemize}
     \item Measure $x$, determine $\mathcal{U}_N(x)$
     \item Solve $\mathbb{P}_N(x)$ and obtain $\underline{u}^*(x)$
     \item Control with $\kappa_N(x)$ such that $x^+=f(x,\kappa_N(x))$
     \item Repeat for $x\coloneqq x^+$
-\end{itemize}
+\end{itemize}\vspace{0.2cm}
 
 \subsection{Constrained Optimization in a nutshell}
 Cost function: $\min F(z)$\\
@@ -110,9 +120,14 @@ Lagrange function $L=F(z)+\lambda^{\top} g(z)$ with Lagrange multiplier $\lambda
 If $z^{*}$ is minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}\right)=0$ and $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}\right)=0$. \\
 \textbf{c)} inequality constrained\\
 Lagrange function $L=F(z)+\mu^{\top} h(z)$ with KKT multiplier $\mu$. \\
-If $z^{*}$ is minimum then $\nabla_{z} L\left(z^{*}, \mu^{*}\right)=0$ and $\mu^{*} \geq 0, h\left(z^{*}\right) \leq 0$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0$ for all $i$.
+If $z^{*}$ is minimum then $\nabla_{z} L\left(z^{*}, \mu^{*}\right)=0$ and $\mu^{*} \geq 0, h\left(z^{*}\right) \leq 0$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0$ for all $i$.\\
+\\
+Optimum for cost function at horizon $N$ for $J_N=0$. If only one constraint is active, use \textbf{b)} to look at constrained edge of control input and derive the remaining optimal control inputs.
+
+\end{sectionbox}
 
 \section{Dynamic Programming}
+\begin{sectionbox}
 
 \subsection{Problem Statement}
 Time-invariant discrete-time dynamical control system\\
@@ -136,19 +151,20 @@ $\Xi_{N}=\mathbb{X}_{f}$ \\
 $\Xi_{i}=\left\{x(i) \in \mathbb{X} | x(i+1) \in \Xi_{i+1} \text { with } u(i) \in \mathbb{U}\right\},\\
 i=N-1, N-2, \ldots 0$\\
 
-\end{sectionbox}
-\begin{sectionbox}
-
 \subsection{Bellman Recursion}
-Recursive calculation of optimal-cost-to-go $V_i^*$ from behind: \\
-$V_{N}^{*}(x(N))=V_f(x(N))$
+Recursive calculation of optimal-cost $V_i^*$, starting with the terminal cost: \\
+$V_{N}^{*}(x(N))=V_f(x(N))$ \; $\rightarrow$ \; $V_{N-1}^{*}=\min\{V^{*}_N+\ldots\}$ \; $\rightarrow$ \;\ldots\\
+In general:
 \begin{multline*}
 V_{i}^{*}(x(i))=\min _{u(i)}\Big\{l(x(i), u(i))+V_{i+1}^{*}\left(f(x(i), u(i))\right) \;| \\u(i) \in \mathbb{U}, x(i) \in \mathbb{X}, f(x(i), u(i)) \in \Xi_{i+1}\Big\},\\
 i=N-1,N-2,\ldots,0
 \end{multline*}
-delivers $u(i)=\mu_{i}^{*}(x(i))$
+Use system $f(x(i),u(i))$ to substitute $x(i+1)$ in $V^{*}_{i+1}(x(i+1))$ and solve $\frac{\partial V_{i}}{\partial u(i)}=0$ to get optimal control input $u^{*}(i)=ax(i)$.\\ Insert $u^{*}(i)$ into $V^{*}_{i}(x(i))$ to get optimal cost-to-go.
+
+\end{sectionbox}
 
 \section{Stability}
+\begin{sectionbox}
 
 \subsection{Stability Concepts}
 System class: $x^{+}=\Tilde{f}(x)$\\
@@ -164,11 +180,14 @@ The equilibrium point $x_{\mathrm{eq}}=0$ of $x^{+}=\hat{f}(x)$ is locally stabl
     \item Globally asymptotically stable, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for all $x(0) \in \mathbb{R}^{n}$.
     \item Asymptotically stable in $\mathcal{X}$, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for all $x(0) \in \mathcal{X}$, where $\mathcal{X}$ is positive.
 \end{itemize}
-\vspace{0.1cm}\\ 
+
+\end{sectionbox}
+\begin{sectionbox}
+
 Definition of positive invariance:\\
 $\mathcal{X}$ is positive invariant for $x^{+}=\Tilde{f}(x)$, if $\Tilde{f}(x)\in\mathcal{X}$ for all $x\in\mathcal{X}$.\\
-(\textit{Once a system trajectory enters set} $\mathcal{X}$, \textit{it will never leave it again.})\\
-\\
+(\textit{Once a system trajectory enters set} $\mathcal{X}$, \textit{it will never leave it again.})
+\\ \\
 Definition of comparison functions:
 \begin{itemize}
     \item A function $\alpha$ is a class $\mathcal{K}$ function, if it is continuous and strictly increasing with $\alpha(0)=0$.
@@ -176,20 +195,19 @@ Definition of comparison functions:
     \item A function $\alpha$ is a class $\mathcal{PD}$ (\textit{positive definite}) function, if it is continuous with $\alpha(0)=0$ and $\alpha(x)>0$ for all $x\neq0$.
 \end{itemize}
 \vspace{0.1cm}\\ 
+
 Lyapunov's direct method:\\
-A function $V\,:\,\mathbb{R}^{n}\:\rightarrow\:\mathbb{R}$ is a global Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$, if $\alpha_1,\alpha_2\in\mathcal{K}_{\infty},\,\alpha_3\in\mathcal{PD}$ exist, such that for all $x\in\mathbb{R}^n$:\\
-(1) Bounded: $\alpha_{1}(\|x\|) \leq V(x) \leq \alpha_{2}(\|x\|)$ \\ 
-(2) Descent: $V(f(x))-V(x) \leq-\alpha_{3}(\|x\|)$\\
+A function $V\,:\,\mathbb{R}^{n}\:\rightarrow\:\mathbb{R}$ is a global Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$, if $\alpha_1,\alpha_2\in\mathcal{K}_{\infty},\,\alpha_3\in\mathcal{PD}$ exist, such that for all $x\in\mathbb{R}^n$ condition \textbf{(1)} and \textbf{(2)} holds.\\
 If $V$ is a global Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$, then the equilibrium is globally asymptotically stable.\\
 \\
-Lyapunov's direct method (constrained):\\
-A function $V\,:\,\mathcal{X}\:\rightarrow\:\mathbb{R}$ with $\mathcal{X}$ invariant is a Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$ on $\mathcal{X}$, if $\alpha_1,\alpha_2\in\mathcal{K}_{\infty},\,\alpha_3\in\mathcal{PD}$ exist, such that for all $x\in\mathcal{X}$:\\
-(1) Bounded: $\alpha_{1}(\|x\|) \leq V(x) \leq \alpha_{2}(\|x\|)$ \\ 
-(2) Descent: $V(f(x))-V(x) \leq-\alpha_{3}(\|x\|)$\\
+Lyapunov's direct method (\textbf{constrained}):\\
+A function $V\,:\,\mathcal{X}\:\rightarrow\:\mathbb{R}$ with $\mathcal{X}$ invariant is a Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$ on $\mathcal{X}$, if $\alpha_1,\alpha_2\in\mathcal{K}_{\infty},\,\alpha_3\in\mathcal{PD}$ exist, such that for all $x\in\mathcal{X}$ condition \textbf{(1)} and \textbf{(2)} holds.\\
 If $V$ is a Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$ on $\mathcal{X}$, then the equilibrium is asymptotically stable on $\mathcal{X}$.\\
 
-\end{sectionbox}
-\begin{sectionbox}
+\begin{emphbox}
+    (1) Bounded: $\alpha_{1}(\|x\|) \leq V(x) \leq \alpha_{2}(\|x\|)$ \\ 
+    (2) Descent: $V(f(x))-V(x) \leq-\alpha_{3}(\|x\|)$\\
+\end{emphbox}
 
 \subsection{Assumptions for Stability}
 Assumption 3:\\
@@ -211,15 +229,18 @@ Under Assumptions 1 to 5, the equilibrium $x_{eq}$ is asymptotically stable in $
 Definition: MPC is said to be recursively feasible, if one can assure that there is a solution to $\mathbb{P}_N(x^{+})$ having a solution of $\mathbb{P}_N(x)$.\\
 \\
 Recursive Feasibility:\\
-If $\mathbb{X}_f$ is control invariant, then\\
+If $\mathbb{X}_f$ is control invariant, then
 \begin{itemize}
-    \item $\mathcal{X}_{j-1}\subseteq\mathcal{X}_{j-1},\;j=1,\ldots,N$
+    \item $\mathcal{X}_{j-1}\subseteq\mathcal{X}_{j},\;j=1,\ldots,N$
     \item $\mathcal{X}_{j-1}$ is control invariant, $j=1,\ldots,N$
     \item MPC is recursively feasible
 \end{itemize}
 
+To find feasible initial values $\mathcal{X}_1$ for an additional target constraint $\mathcal{X}_0=\mathbb{X}_f=\{0\}$, check if system dynamics satisfy target constraint with $x^{+}=f(x,u)=0$.\\
+\\
+To determine $\mathcal{X}_1$ given an control invariant target set $\mathcal{X}_0=\mathbb{X}_f$, put in system dynamics $x^{+}$ for $x$.
+
 \end{sectionbox}
-\textbf{Notes:}
 
 \newpage
 \section{MPC for Linear Systems}
@@ -241,7 +262,7 @@ $$K(k)=-\left(B^{\top} P(k+1) B+R\right)^{-1} B^{\top} P(k+1) A$$ and
     \quad\ P(k)=A^{\top} P(k+1) A+Q-A^{\top} P(k+1) B\\\left(B^{\top} P(k+1) B+R\right)^{-1} B^{\top} P(k+1) A
 \end{multline*}
 Recursion for the Riccatti Matrix:
-$$P(k)=A^{\top} P(k+1) A+Q-\boldsymbol{K}(k)^{\top}B^{\top} P(k+1)A$$
+$$P(k)=A^{\top} P(k+1) A+Q+\boldsymbol{K}(k)^{\top}B^{\top} P(k+1)A$$
 In addition:\\ 
 $V_{0}^{*}\left(x_{0}\right)=\frac{1}{2} x_{0}^{\top} P(0) x_{0}$\\
 
@@ -250,9 +271,8 @@ System Class: $x^{+}=A x+B u$ \\
 Cost: $V(x, \underline{u})=\frac{1}{2} \sum\limits_{k=0}^{\infty}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}$ \\
 Control Law: $u(k)=K_{\infty} x(k)$, while \\ $K_{\infty}=-\left(B^{\top} P_{\infty} B+R\right)^{-1} B^{\top} P_{\infty} A$ and Riccati Equation:\\ 
 ${P_{\infty}=Q+K_{\infty}^{\top} R K_{\infty}+\left(A+B K_{\infty}\right)^{\top} P_{\infty}\left(A+B K_{\infty}\right)}$\\
-\\
 Stationary Riccatti Matrix:
-$$P_{\infty}=A^{\top} P_{\infty} A+Q+\boldsymbol{K}_{\infty}^{\top}B^{\top} P_{\infty}A$$
+$$P_{\infty}=A^{\top} P_{\infty} A+Q+\boldsymbol{K}_{\infty}^{\top}B^{\top} P_{\infty}A,\qquad P_{\infty}\geq 0$$
 
 \subsection{MPC (constrained, receding horizon)}
 Stability of equilibrium $x_{eq}=0$ under MPC, if\\
@@ -300,7 +320,9 @@ $$
 
 \subsection{Diophantine Equation}
 $\rightarrow$ Fewer equations than unknown variables\\
-$1=E_{j} z^{-1} \tilde{A}\left(z^{-1}\right)+z^{-j} F_{j}\left(z^{-1}\right)$ with $\tilde{A}=\Delta A$ \\ $E_{j}\left(z^{-1}\right)$: polynomial of degree $j-1$ \\ $F_{j}\left(z^{-1}\right)$: polynomial of degree of $\tilde{A}$ \\ \\
+$1=E_{j} z^{-1} \tilde{A}\left(z^{-1}\right)+z^{-j} F_{j}\left(z^{-1}\right)$ with $\tilde{A}=\Delta A$ \\ $E_{j}\left(z^{-1}\right)$: polynomial of degree $j-1$ \\ $F_{j}\left(z^{-1}\right)$: polynomial of degree of $\tilde{A}$
+\\ \\
+
 Prediction:\\ $\underline{y}=\underline{G u}+\underline{p}$ \quad($\underline{p}$ often denoted as $f$)\\
 where the choice of $\underline{y}$ and $\underline{u}$ as:
 $$
@@ -312,10 +334,28 @@ defines $G$ and $\underline{p}$:
 $$G=\left[\begin{array}{cccc}{g_{0}} & {0} & {\dots} & {0} \\ {g_{1}} & {g_{0}} & {\dots} & {0} \\ {\vdots} & {\vdots} & {\vdots} & {\vdots} \\ {g_{N-1}} & {g_{N-2}} & {\dots} & {g_{0}}\end{array}\right]$$
 $$\underline{p}=\underline{F}\left(z^{-1}\right) y(t)+\underline{G}^{\prime}\left(z^{-1}\right) \Delta u(t-1)$$
 with\\
+$G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right)$\\
 $\underline{G}^{\prime}\left(z^{-1}\right)=&\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right]$\\
 $\underline{F}\left(z^{-1}\right)=\left[F_{1}\left(z^{-1}\right), F_{2}\left(z^{-1}\right), \ldots, F_{N}\left(z^{-1}\right)\right]^{\top}$\\
-$G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right)$\\
-and $g_{j}$ $j$-th coefficients of polynomial $G_{j}$.\\
+and $g_{j}$ $j$-th coefficients of polynomial $G_{j}$.
+
+\end{sectionbox}
+\begin{sectionbox}
+\textbf{Excursion:}
+Polynomials $E_{j}\left(z^{-1}\right)$ and $F_{j}\left(z^{-1}\right)$ can be obtained by dividing $1$ by $\tilde{A}(z^{-1})=\Delta A(z^{-1})$ until the remainder can be factorized as $z^{-j}F_{j}(z^{-1})$, e.g.:\\
+\( \begin{aligned} (1 \qquad \ \qquad):(\overbrace{1-2z^{-1}+2z^{-2}-z^{-3}}^{\Delta A(z^{-1})})=\overbrace{\overbrace{1}^{E_1}+2z^{-1}}^{E_2}+\ \ldots \end{aligned}\\
+\begin{aligned}
+\frac{1-2 z^{-1}+2 z^{-2}-z^{-3}}{\qquad 2 z^{-1}-2 z^{-2}+z^{-3}} &  \frac{}{\ \ \qquad \qquad \Rightarrow z^{-1} F_{1}\left(z^{-1}\right)}
+\end{aligned}\\
+\begin{aligned}
+\frac{\qquad 2 z^{-1}-4 z^{-2}+4 z^{-3}-2 z^{-4}}{\qquad \qquad \qquad 2z^{-2}- 3z^{-3}+2 z^{-4}} & \frac{}{\Rightarrow z^{-2} F_{2}\left(z^{-1}\right)} & \ldots \end{aligned} \)
+\\
+For $N=2$:\\
+$E_1(z^{-1})=1$, \quad $E_2(z^{-1})=1+2z^{-1}$\\
+\\
+$z^{-1}F_1(z^{-1})=2z^{-1}-2z^{-2}+z^{-3}$\\ \textcolor{white}{n}$\rightarrow F_1(z^{-1})=2\qquad -2z^{-1}+z^{-2}$\\
+\\
+$z^{-2}F_2(z^{-1})=2z^{-2}-3z^{-3}+2z^{-4}$\\ \textcolor{white}{n}$\rightarrow F_2(z^{-1})=2\qquad -3z^{-1}+2z^{-2}$\\
 
 \subsection{QP Problem}
 Cost: $$J=u\left(G^{T} Q G+R\right) \underline{u}+2(\underline{p}-\underline{w})^{T} Q G \underline{u}+(\underline{p}-\underline{w})^{T} Q(\underline{p}-\underline{w})$$ is minimized by control sequence of future controls \\
@@ -347,6 +387,10 @@ Find minimum $z^{*}$ numerically as follows
     \item Stop if $\|\nabla F(z^{(k)})\|<\epsilon_{tol}$
 \end{itemize}\vspace{0.2cm}
 
+\end{sectionbox}
+\textbf{Notes:}
+\begin{sectionbox}
+
 \subsection{Constrained Minimization: Quadratic Programming}
 Applies for QP problem class:\\
 Quadratic cost function: $F(z)=\frac{1}{2}z^{\top}Hz+c^{\top}z$\\
@@ -364,10 +408,10 @@ where $I^{(k)}z+i^{(k)}\leq 0$ are inequality constraints from active set $\math
     \item Update active set:\\
     When for $j \in \mathcal{A}_{k}: \mu_{j}^{(k+1)}<0$, delete const. $j$ from active set\\
     When for $j \notin \mathcal{A}_{k} I_{j} z^{(k+1)}+i_{j} \geq 0$, add constraint $j$ to active set and thus get $\mathcal{A}_{k+1}$
-\end{itemize}\vspace{0.2cm}
+\end{itemize}
 
 \subsection{Constrained Minimization: Sequential Quadratic Programming}
-Combine Newton's Methods (linearization of NP problem to obtain QP problem) and QP method (choice of feasible active set of linearized problem).
+Combine Newton's Methods (linearization of NP problem to obtain QP problem) and QP method (choice of feasible active set of linearized problem).\\
 
 \subsection{Constrained Minimization: Interior Point}
 Cost function: $F(z)$\\
@@ -403,7 +447,7 @@ MPC feedback control: $u^{*}=v^{*}+K(x-z)$, where $K$ is found offline. Appropia
 Optimize cost to find $v^{*}$ such that $x^{*}$ is constraint admissible by constraint tightening using the tube.
 
 \end{sectionbox}
-\textbf{Notes:}
+
 
 % DOCUMENT_END =================================================================
 \end{document}
