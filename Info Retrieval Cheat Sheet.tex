@@ -51,7 +51,6 @@ For system equations $y_i=f_i(x)$, you can find $x$ with \textbf{Least Squares}:
 Time-invariant discrete-time dynamical control system \\
 $x(k+1)=f(x(k), u(k));\quad k=0,1,2,...\quad x(0)=x_0$\\
 with state $x(k)\in\mathbb{R}^n$ and control input $u(k)\in\mathbb{R}^m$.\\
-Open loop: $x^{+}=f(x)$ \; $\longleftrightarrow$ \; Closed loop: $x^{+}=f(x,u)$\\
 
 Notation:\\
 ${\underline{u}^{N}\coloneqq\{u(0), u(1), \ldots u(N-1)\}} \\ {\underline{x}_{u}^{N}\left(x_{0}\right)\coloneqq\left\{x_{0}, x_{\underline{u}}\left(1, x_{0}\right), \ldots x_{\underline{u}}\left(N, x_{0}\right)\right\}}$ \\ 
@@ -63,12 +62,6 @@ Infinite Horizon:
 Finite Horizon:
 \[J_{N}\left(x_{0}, \underline{u}^{N}\right)=\sum_{k=0}^{N-1} l\left(x_{\underline{u}}\left(k, x_{0}\right), u(k)\right)+J_{f}\left(x_{\underline{u}}\left(N, x_{0}\right)\right)\]
 with stage cost $l(x,u)$ and target cost $J_f(x)$.\\
-\\
-Matrix form:
-\[J(x,\underline{u})=\frac{1}{2}\underline{u}^{\top}\mathbf{H}\underline{u}+c(x)^{\top}\underline{u}+d(x)\]
-
-\end{sectionbox}
-\begin{sectionbox}
 
 \subsection{Constraints}
 Input constraints: $u(k) \in \mathbb{U}$ \\ 
@@ -78,6 +71,9 @@ with
 \begin{multline*}
 \mathbb{Z}_{N}\coloneqq\Big\{\left(x_{0}, \underline{u}\right) | u(k) \in \mathbb{U}, x_{\underline{u}}\left(k, x_{0}\right) \in \mathbb{X}, \\ k=0,1, \ldots, N-1 ; x_{\underline{u}}\left(N, x_{0}\right) \in \mathbb{X}_{f}\Big\}
 \end{multline*}
+
+\end{sectionbox}
+\begin{sectionbox}
 
 \subsection{Optimization Problem}
 $$
@@ -90,7 +86,7 @@ $f,\,l,\,J_f$ are continuous with $f(0,0)=0,\; l(0,0)=0,\; J_f(0)=0$.\\
 Assumption 2:\\
 $\mathbb{X}$ is closed, $\mathbb{X}_f$ and $\mathbb{U}$ are compact and all sets contain the origin.\\
 \\
-Under \textit{Assumption 1} and \textit{Assumption 2}, the optimization problem $\mathbb{P}_N(x_0)$ has a solution for all $x_0\in\mathcal{X}_N$. \\($\rightarrow$ Theorem of Weierstrass: Sets are sequentially compact \textit{and} every bounded sequence of complex numbers contains at least one convergent subsequence.)
+Under \textit{Assumption 1} and \textit{Assumption 2}, the optimization problem $\mathbb{P}_N(x_0)$ has a solution for all $x_0\in\mathcal{X}_N$. \\($\rightarrow$ Theorem of Weierstrass: Sets are sequentially compact \textit{and} every bounded sequence of complex numbers contains at least one convergent subsequence.)\\
 
 \subsection{Controller}
 $\kappa_{N}\left(x_{0}\right)=u^{*}\left(0, x_{0}\right)$ \\ 
@@ -125,7 +121,7 @@ If $z^{*}$ is minimum then $\nabla_{z} L\left(z^{*}, \mu^{*}\right)=0$ and $\mu^
 Optimum for cost function at horizon $N$ for $J_N=0$. If only one constraint is active, use \textbf{b)} to look at constrained edge of control input and derive the remaining optimal control inputs.
 
 \end{sectionbox}
-
+\vspace{5cm}
 \section{Dynamic Programming}
 \begin{sectionbox}
 
@@ -169,6 +165,7 @@ Use system $f(x(i),u(i))$ to substitute $x(i+1)$ in $V^{*}_{i+1}(x(i+1))$ and so
 \subsection{Stability Concepts}
 System class: $x^{+}=\Tilde{f}(x)$\\
 Equilibrium point: $x_{eq}=\Tilde{f}(x_{eq})$\\
+Open loop: $x^{+}=f(x)$ \; $\longleftrightarrow$ \; Closed loop: $x^{+}=f(x,u)$\\
 \\
 Assumption:\\
 If $\Tilde{f}$ is not continuous, it is at least locally bounded.\\
@@ -235,7 +232,7 @@ If $\mathbb{X}_f$ is control invariant, then
     \item $\mathcal{X}_{j-1}$ is control invariant, $j=1,\ldots,N$
     \item MPC is recursively feasible
 \end{itemize}
-
+\vspace{0.2cm}
 To find feasible initial values $\mathcal{X}_1$ for an additional target constraint $\mathcal{X}_0=\mathbb{X}_f=\{0\}$, check if system dynamics satisfy target constraint with $x^{+}=f(x,u)=0$.\\
 \\
 To determine $\mathcal{X}_1$ given an control invariant target set $\mathcal{X}_0=\mathbb{X}_f$, put in system dynamics $x^{+}$ for $x$.
@@ -269,8 +266,10 @@ $V_{0}^{*}\left(x_{0}\right)=\frac{1}{2} x_{0}^{\top} P(0) x_{0}$\\
 \subsection{LQ Control (no constraints, infinite horizon)}
 System Class: $x^{+}=A x+B u$ \\
 Cost: $V(x, \underline{u})=\frac{1}{2} \sum\limits_{k=0}^{\infty}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}$ \\
+\\
 Control Law: $u(k)=K_{\infty} x(k)$, while \\ $K_{\infty}=-\left(B^{\top} P_{\infty} B+R\right)^{-1} B^{\top} P_{\infty} A$ and Riccati Equation:\\ 
 ${P_{\infty}=Q+K_{\infty}^{\top} R K_{\infty}+\left(A+B K_{\infty}\right)^{\top} P_{\infty}\left(A+B K_{\infty}\right)}$\\
+\\
 Stationary Riccatti Matrix:
 $$P_{\infty}=A^{\top} P_{\infty} A+Q+\boldsymbol{K}_{\infty}^{\top}B^{\top} P_{\infty}A,\qquad P_{\infty}\geq 0$$
 
@@ -286,7 +285,9 @@ constrained:\\
 Using previews $x(k)=A^{k}x_{0}+A^{k-1}Bu(0)+\ldots+Bu(k-1)$\\
 for all $k$ in horizon in cost function 
 $$J_{N}\left(x_{0}, \underline{u}\right)=\frac{1}{2} \sum\limits_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}$$
-allows to transform the cost into\\ $J_N(x,\underline{u})=\frac{1}{2}\underline{u}^{\top}H(x_0)\underline{u}+c(x_{0})^{\top}\underline{u}+d(x_{0})$ with $\underline{u}\in\mathcal{U}_{N}(x_{0})$\\polytopes QP problem (=Quadratic cost with linear constraints) allows for efficient numerics.
+allows to transform the cost into $$J_N(x,\underline{u})=\frac{1}{2}\underline{u}^{\top}H(x_0)\underline{u}+c(x_{0})^{\top}\underline{u}+d(x_{0})$$
+with $\underline{u}\in\mathcal{U}_{N}(x_{0})$
+polytopes QP problem (= quadratic cost with linear constraints) allows for efficient numerics.
 
 \end{sectionbox}
 
@@ -303,7 +304,7 @@ $$A\left(z^{-1}\right) y(t)=B\left(z^{-1}\right) z^{-d} u(t-1)+C\left(z^{-1}\rig
     \item Shift operator: $z^{-k} y(t)=y(t-k)$
     \item Dead time: $z^{-d}$, in the following $d=0$
     \item $e(t)$: white noise with zero mean
-    \item $\Delta=1-z^{-1}$ (for $u(t-1)$. for $u(t)$: $\Delta=1$)
+    \item $\Delta=1-z^{-1}$ (for $u(t) \leftrightarrow$ for $u(t-1)$: $\Delta=1$)
     \item $C\left(z^{-1}\right)$ for colored noise, in the following $C\left(z^{-1}\right)=1$
 \end{itemize}
 Cost: 
@@ -408,9 +409,10 @@ where $I^{(k)}z+i^{(k)}\leq 0$ are inequality constraints from active set $\math
     \item Update active set:\\
     When for $j \in \mathcal{A}_{k}: \mu_{j}^{(k+1)}<0$, delete const. $j$ from active set\\
     When for $j \notin \mathcal{A}_{k} I_{j} z^{(k+1)}+i_{j} \geq 0$, add constraint $j$ to active set and thus get $\mathcal{A}_{k+1}$
-\end{itemize}
+    \item Stop if $\mathcal{A}_{k}$ is not active anymore.
+\end{itemize}\vspace{0.2cm}
 
-\subsection{Constrained Minimization: Sequential Quadratic Programming}
+\subsection{Constrained Minimization: Sequential QP}
 Combine Newton's Methods (linearization of NP problem to obtain QP problem) and QP method (choice of feasible active set of linearized problem).\\
 
 \subsection{Constrained Minimization: Interior Point}
