@@ -150,7 +150,7 @@ i=N-1, N-2, \ldots 0$\\
 \subsection{Bellman Recursion}
 Recursive calculation of optimal-cost $V_i^*$, starting with the terminal cost: \\
 $V_{N}^{*}(x(N))=V_f(x(N))$ \; $\rightarrow$ \; $V_{N-1}^{*}=\min\{V^{*}_N+\ldots\}$ \; $\rightarrow$ \;\ldots\\
-In general:
+In general, with $l(x(i),u(i))$ as cost of only the current $i$:
 \begin{multline*}
 V_{i}^{*}(x(i))=\min _{u(i)}\Big\{l(x(i), u(i))+V_{i+1}^{*}\left(f(x(i), u(i))\right) \;| \\u(i) \in \mathbb{U}, x(i) \in \mathbb{X}, f(x(i), u(i)) \in \Xi_{i+1}\Big\},\\
 i=N-1,N-2,\ldots,0
@@ -233,9 +233,11 @@ If $\mathbb{X}_f$ is control invariant, then
     \item MPC is recursively feasible
 \end{itemize}
 \vspace{0.2cm}
-To find feasible initial values $\mathcal{X}_1$ for an additional target constraint $\mathcal{X}_0=\mathbb{X}_f=\{0\}$, check if system dynamics satisfy target constraint with $x^{+}=f(x,u)=0$.\\
+To find feasible initial values $\mathcal{X}_1$ for an additional target constraint $\mathcal{X}_0=\mathbb{X}_f=\{0\}$, solve $x^{+}=f(x,u)=0$ and check which states satisfy target constraint.\\
 \\
-To determine $\mathcal{X}_1$ given an control invariant target set $\mathcal{X}_0=\mathbb{X}_f$, put in system dynamics $x^{+}$ for $x$.
+To determine $\mathcal{X}_1$ given an control invariant target set $\mathcal{X}_0=\mathbb{X}_f$, put in system dynamics $x^{+}$ for $x$ in $\mathbb{X}_f$ and check if state constraints are satisfied. $\mathcal{X}_1$ is then the set with adjusted system matrix and limits.
+$$\mathcal{X}_1=\left\{\mathbf{A}\begin{bmatrix}x_1 \\ x_2 \end{bmatrix}\leq\begin{bmatrix}a \\ b \end{bmatrix}\right\}$$
+With control constraints $a_u\leq u\leq b_u$, give feasible values subject to the constraints. E.g. for state $x=\left[x_1\ x_2\ x_3\right]^{\top}$\\ $\mathcal{X}_1=\{x| a_u \leq x_1 \leq b_u,\ x_1=x_3=-x_2\}$
 
 \end{sectionbox}
 
@@ -373,10 +375,10 @@ where only $\underline{u}_{1}=\Delta u(t)$ is applied as control.
 Cost function: $F(z)$\\
 Equality constraints: $g(z)=0$\\
 Inequality constraints: $h(z)\leq 0$\\
+Active Set: $\mathcal{A}=\left\{j | \mu_{j}>0\right\}$ (\textit{set of active constraints})\\
 \\
 Necessary conditions for a minimum:\\
-If $z^{*}$ is feasible minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0$, $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0$ and $\mu^{*} \geq 0$, $h\left(z^{*}\right) \leq 0$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0$ for all $i$ with Lagrange function $L=F(z)+\lambda^{\top} g(z)+\mu^{\top} h(z)$ with multipliers $\lambda$ and $\mu$.\\
-Active Set: $\mathcal{A}=\left\{j | \mu_{j}>0\right\}$\\
+If $z^{*}$ is feasible minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0$ and $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0\quad$ with $\quad\mu^{*} \geq 0$, $h\left(z^{*}\right) \leq 0\quad$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0\quad$ for all $i$ with Lagrange function\\ $L=F(z)+\lambda^{\top} g(z)+\mu^{\top} h(z)$ with multipliers $\lambda$ and $\mu$.\\
 
 \subsection{Unconstrained Minimization: Newton's Method}
 Find minimum $z^{*}$ numerically as follows
@@ -384,12 +386,22 @@ Find minimum $z^{*}$ numerically as follows
     \item Initialize: Guess $z^{(0)}$ close to $z^{*}$ for $k=0,1,2,\ldots$
     \item Update (calculate tangent and corresponding root value):\\
     $z^{(k+1)}=z^{(k)}+\alpha^{(k)} d^{(k)}$ where\\ $d^{(k)}=-\left(\nabla^{2} F\left(z^{(k)}\right)\right)^{-1} \nabla F\left(z^{(k)}\right)$ (search direction)\\
-    and $\alpha^{(k)}=\textrm{argmin}\ F(z^{(k)}+\alpha d^{(k)})$ (line search)
+    and step length $\alpha^{(k)}=\textrm{argmin}\ F(z^{(k)}+\alpha d^{(k)})$ (line search)
     \item Stop if $\|\nabla F(z^{(k)})\|<\epsilon_{tol}$
 \end{itemize}\vspace{0.2cm}
 
+\subsection{Soft Constraints}
+Softened minimization problem with penalty term $l(\epsilon)$:
+$$\min_{x}f(x)+l(\epsilon), \text{ s.t. }g(x)\leq\epsilon,\;\epsilon \geq 0$$
+where $\epsilon$ defines the degree of softness.\\
+\\
+\textbf{Quadratic penalty}: $l\epsilon)=v\cdot\epsilon^{2}$ with $v>0$\\
+Feasible solution $x^*$ for the original problem is not the same for the softened problem for any $v>0$ and $\epsilon=0$.\\
+\\
+\textbf{Linear penalty}: $l(\epsilon)=u\cdot\epsilon$\\
+Same solution as original problem for $u>\mu^*\geq 0$, where $\mu^*$ is the optimal Lagrange multiplier for the original problem.
+
 \end{sectionbox}
-\textbf{Notes:}
 \begin{sectionbox}
 
 \subsection{Constrained Minimization: Quadratic Programming}
@@ -401,11 +413,8 @@ Liner inequality constraints: $h(z)=Iz+i\leq 0$\\
 Find minimum $z^{*}$ numerically as follows
 \begin{itemize}
     \item Initialize: Guess initial active set $\mathcal{A}_0$ for $k=0,1,2,\ldots$
-    \item Update optimization variables:
-\end{itemize}
-$$\left(\begin{array}{ccc}{H} & {E^{\top}} & {\left(I^{(k)}\right)^{\top}} \\ {E} & {0} & {0} \\ {I^{(k)}} & {0} & {0}\end{array}\right)\left(\begin{array}{l}{z^{(k+1)}} \\ {\lambda^{(k+1)}} \\ {\mu^{(k+1)}}\end{array}\right)=\left(\begin{array}{c}{-c} \\ {-e} \\ {-i^{(k)}}\end{array}\right)$$
-where $I^{(k)}z+i^{(k)}\leq 0$ are inequality constraints from active set $\mathcal{A}_k$ that are treated as equality constraints.
-\begin{itemize}
+    \item Update optimization variables $z$ with $\frac{\partial L}{\partial z}$.\\
+    Inequality constraints from active set $\mathcal{A}_k$ are treated as equality constraints. Non-active constraints are neglected.
     \item Update active set:\\
     When for $j \in \mathcal{A}_{k}: \mu_{j}^{(k+1)}<0$, delete const. $j$ from active set\\
     When for $j \notin \mathcal{A}_{k} I_{j} z^{(k+1)}+i_{j} \geq 0$, add constraint $j$ to active set and thus get $\mathcal{A}_{k+1}$
