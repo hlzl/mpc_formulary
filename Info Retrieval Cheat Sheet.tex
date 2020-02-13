@@ -79,12 +79,11 @@ with
 $$
 \mathbb{P}_{N}\left(x_{0}\right): J_{N}^{*}\left(x_{0}\right)=\min _{\underline{u}}\left\{J_{N}\left(x_{0}, \underline{u}\right) | \underline{u} \in \mathcal{U}_{N}\left(x_{0}\right)\right\}
 $$
-\\
 Assumption 1:\\
-$f,\,l,\,J_f$ are continuous with $f(0,0)=0,\; l(0,0)=0,\; J_f(0)=0$.\\
+$f,\,l,\,J_f$ are continuous with $f(0,0)=0,\; l(0,0)=0,\; J_f(0)=0$.\vspace{0.1cm}
 \\
 Assumption 2:\\
-$\mathbb{X}$ is closed, $\mathbb{X}_f$ and $\mathbb{U}$ are compact and all sets contain the origin.\\
+$\mathbb{X}$ is closed, $\mathbb{X}_f$ and $\mathbb{U}$ are compact and all sets contain the origin.\vspace{0.1cm}
 \\
 Under \textit{Assumption 1} and \textit{Assumption 2}, the optimization problem $\mathbb{P}_N(x_0)$ has a solution for all $x_0\in\mathcal{X}_N$. \\($\rightarrow$ Theorem of Weierstrass: Sets are sequentially compact \textit{and} every bounded sequence of complex numbers contains at least one convergent subsequence.)\\
 
@@ -121,24 +120,40 @@ If $z^{*}$ is minimum then $\nabla_{z} L\left(z^{*}, \mu^{*}\right)=0$ and $\mu^
 Optimum for cost function at horizon $N$ for $J_N=0$. If only one constraint is active, use \textbf{b)} to look at constrained edge of control input and derive the remaining optimal control inputs.
 
 \end{sectionbox}
-\vspace{5cm}
 \section{Dynamic Programming}
 \begin{sectionbox}
 
 \subsection{Problem Statement}
-Time-invariant discrete-time dynamical control system\\
-$x(k+1)=f(x(k), u(k)) ; \quad k=0,1,2, \ldots \quad x(0)=x_{0}$ \\ \\
+Time-invariant discrete-time dynamical control system \textit{(can be nonlinear)}:\\
+$x(k+1)=f(x(k), u(k)) ; \quad k=0,1,2, \ldots \quad x(0)=x_{0}$ \\
 Cost: $V\left(x_{0}, \underline{u}\right)=\sum\limits_{k=0}^{N-1} l(x(k), u(k))+V_{f}(x(N))$ \\
 State constraints: $x(k) \in \mathbb{X},\; k=0,1, \ldots, N-1,\; x(N) \in \mathbb{X}_{f}$\\
-Input constraints: $u(k) \in \mathbb{U}, k=1,2, \ldots, N-1$ \\ \\
-Find $\underline{u}=\{u(0), u(1), \ldots, u(N-1)\}$ where $u(k)=\mu_{k}(x(k))$ are control laws.\\
+Input constraints: $u(k) \in \mathbb{U}, k=1,2, \ldots, N-1$ \vspace{0.1cm}\\ 
+Find $\underline{u}=\{u(0),u(1), \ldots, u(N-1)\}$ \\where $u(k)=\mu_{k}(x(k))$ are control laws.
+\vspace{0.1cm}\\
+\textbf{Advantages and Disadvantages}:\\
+$+$ We get control laws \qquad $+$ Costly optimization is done offline\\
+$-$ Curse of dimensionality
+\vspace{0.1cm}\\
+\textbf{Comparisson to MPC}:
+\begin{itemize}
+    \item Dynamic Programming (DP) has one large horizon.
+    \item MPC delivers control action for only one specific realisation.
+    \item DP is optimal for full problem and target constraints are satisfied.\\
+    MPC target constraints are reached asymptotically\\ $\rightarrow$ \textit{might have stability problem}
+\end{itemize}
+
+
+\end{sectionbox}
+\begin{sectionbox}
 
 \subsection{Notation}
 Cost-to-go: $V_{i}\left(x, \underline{u}^{i}\right)=\sum\limits_{k=i}^{N-1} l(x(k), u(k))+V_{f}(x(N))$ \\
-with $\underline{u}^{i}=\{u(i), u(i+1), \ldots, u(N-1)\}$ \\ \\
-Optimal cost-to-go: $V_{i}^{*}(x)=\min _{\underline{u}^{i} \in \Upsilon_{i}(x)} V_{i}\left(x, \underline{u}^{i}\right)$ \\
+with $\underline{u}^{i}=\{u(i), u(i+1), \ldots, u(N-1)\}$ \\
+Optimal cost-to-go: $V_{i}^{*}(x)=\min _{\underline{u}^{i} \in \Upsilon_{i}(x)} V_{i}\left(x, \underline{u}^{i}\right)$\quad
 with
-\begin{multline*} \Upsilon_{i}(x)\coloneqq\\\left\{\underline{u}^{i} | \text { for initial state } x(i)=x: u(k) \in \mathbb{U}, k=i, \ldots, N-1;\right.\\\left.x(k) \in \mathbb{X}, k=i+1, \ldots, N-1 ; x(N) \in \mathbb{X}_{f}\right\} 
+\begin{multline*}
+    \Upsilon_{i}(x)\coloneqq\\\left\{\underline{u}^{i} | \text{ for initial state } x(i)=x: u(k) \in \mathbb{U}, k=i ,\ldots, N-1;\\x(k) \in \mathbb{X}, k=i+1, \ldots ,N-1 ; x(N) \in \mathbb{X}_{f}\right\}
 \end{multline*}
 and $\Xi_{i}\coloneqq\left\{x \in \mathbb{X} | \Upsilon_{i}(x) \neq \emptyset\right\}$ \\
 \\
@@ -163,35 +178,38 @@ Use system $f(x(i),u(i))$ to substitute $x(i+1)$ in $V^{*}_{i+1}(x(i+1))$ and so
 \begin{sectionbox}
 
 \subsection{Stability Concepts}
-System class: $x^{+}=\Tilde{f}(x)$\\
-Equilibrium point: $x_{eq}=\Tilde{f}(x_{eq})$\\
-Open loop: $x^{+}=f(x)$ \; $\longleftrightarrow$ \; Closed loop: $x^{+}=f(x,u)$\\
+System class: $x^{+}=\Tilde{f}(x)$ \quad $\rightarrow$ \ Equilibrium point: $x_{eq}=\Tilde{f}(x_{eq})$\\
+Open loop: $x^{+}=f(x)$ \; $\longleftrightarrow$ \; Closed loop: $x^{+}=f(x,u)$\vspace{0.1cm}
 \\
 Assumption:\\
-If $\Tilde{f}$ is not continuous, it is at least locally bounded.\\
+If $\Tilde{f}$ is not continuous, it is at least locally bounded.\vspace{0.1cm}
 \\
 Definition of stability in the sense of Lyapunov:\\
-The equilibrium point $x_{\mathrm{eq}}=0$ of $x^{+}=\hat{f}(x)$ is locally stable, if for all $\varepsilon>0$ there exists a $\delta>0$ such that for all $\|x(0)\| \leq \delta(\varepsilon)$, it holds that $\|x(k)\| \leq \varepsilon$ for all $k>0$.
+Equilibrium point $x_{\mathrm{eq}}=0$ of $x^{+}=\hat{f}(x)$ is locally stable, if $\forall\varepsilon>0$ there exists a $\delta>0$ s.t. for all $\|x(0)\| \leq \delta(\varepsilon)$, it holds that $\|x(k)\| \leq \varepsilon$ for all $k>0$.
 \begin{itemize}
     \item Locally asymptotically stable, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for $x(0)$ close to the origin.
     \item Globally asymptotically stable, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for all $x(0) \in \mathbb{R}^{n}$.
     \item Asymptotically stable in $\mathcal{X}$, if in addition $\lim _{k \rightarrow \infty}\|x(k)\|=0$ for all $x(0) \in \mathcal{X}$, where $\mathcal{X}$ is positive.
-\end{itemize}
+\end{itemize}\vspace{0.2cm}
 
-\end{sectionbox}
-\begin{sectionbox}
-
-Definition of positive invariance:\\
+Definition of \textbf{positive invariance}:\\
 $\mathcal{X}$ is positive invariant for $x^{+}=\Tilde{f}(x)$, if $\Tilde{f}(x)\in\mathcal{X}$ for all $x\in\mathcal{X}$.\\
-(\textit{Once a system trajectory enters set} $\mathcal{X}$, \textit{it will never leave it again.})
-\\ \\
-Definition of comparison functions:
+(\textit{Once a system trajectory enters set} $\mathcal{X}$, \textit{it will never leave it again.})\\
+
+\textbf{Comparison Functions}:\\
+Necessary as candidate Lyapunov function is discontinuous.\\ 
+$\rightarrow$ Optimal control $\underline{u}^{*}$ is solution of a optimum, convergence to different local minima possible.\\
+$\rightarrow$ Special case: unconstrained MPC is continuous\\
+\\
+Definition:
 \begin{itemize}
     \item A function $\alpha$ is a class $\mathcal{K}$ function, if it is continuous and strictly increasing with $\alpha(0)=0$.
     \item A function $\alpha$ is a class $\mathcal{K}_{\infty}$ function, if it a class $\mathcal{K}$ function and in addition unbounded.
     \item A function $\alpha$ is a class $\mathcal{PD}$ (\textit{positive definite}) function, if it is continuous with $\alpha(0)=0$ and $\alpha(x)>0$ for all $x\neq0$.
 \end{itemize}
-\vspace{0.1cm}\\ 
+
+\end{sectionbox}
+\begin{sectionbox}
 
 Lyapunov's direct method:\\
 A function $V\,:\,\mathbb{R}^{n}\:\rightarrow\:\mathbb{R}$ is a global Lyapunov function for the equilibrium of $x^{+}=\Tilde{f}(x)$, if $\alpha_1,\alpha_2\in\mathcal{K}_{\infty},\,\alpha_3\in\mathcal{PD}$ exist, such that for all $x\in\mathbb{R}^n$ condition \textbf{(1)} and \textbf{(2)} holds.\\
@@ -225,14 +243,14 @@ Under Assumptions 1 to 5, the equilibrium $x_{eq}$ is asymptotically stable in $
 \subsection{Recursive Feasibility}
 Definition: MPC is said to be recursively feasible, if one can assure that there is a solution to $\mathbb{P}_N(x^{+})$ having a solution of $\mathbb{P}_N(x)$.\\
 \\
-Recursive Feasibility:\\
 If $\mathbb{X}_f$ is control invariant, then
 \begin{itemize}
     \item $\mathcal{X}_{j-1}\subseteq\mathcal{X}_{j},\;j=1,\ldots,N$
     \item $\mathcal{X}_{j-1}$ is control invariant, $j=1,\ldots,N$
     \item MPC is recursively feasible
 \end{itemize}
-\vspace{0.2cm}
+To deal with infeasibility, soften hard constraints.\\
+\\
 To find feasible initial values $\mathcal{X}_1$ for an additional target constraint $\mathcal{X}_0=\mathbb{X}_f=\{0\}$, solve $x^{+}=f(x,u)=0$ and check which states satisfy target constraint.\\
 \\
 To determine $\mathcal{X}_1$ given an control invariant target set $\mathcal{X}_0=\mathbb{X}_f$, put in system dynamics $x^{+}$ for $x$ in $\mathbb{X}_f$ and check if state constraints are satisfied. $\mathcal{X}_1$ is then the set with adjusted system matrix and limits.
@@ -250,10 +268,11 @@ System class: $x^{+}=A x+B u$ \\
 Cost: $J_{N}(x, \underline{u})=\frac{1}{2} \sum\limits_{k=0}^{N-1}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}$ \\
 Constraints: $x(k) \in \mathbb{X}, u(k) \in \mathbb{U}, x(N) \in \mathbb{X}_{f}$, where $\mathbb{X}$, $\mathbb{U}$ and $\mathbb{X}_{f}$ are convex polytopes\\
 
-\subsection{LQ Control (no constraints, non-receding finite horizon)}
+\subsection{LQ Control (non-receding finite horizon)}
+For linear systems with quadratic cost and no constraints.\\
 System Class: $x^{+}=A x+B u$ \\
 Cost: $$V_{0}\left(x_{0}, u\right)=\frac{1}{2} \sum_{k=1}^{N-1}\underbrace{\|x(k)\|_{Q}^{2}}_{\substack{\text{penalize} \\ \text{bad performance}}}+\underbrace{\|u(k)\|_{R}^{2}}_{\substack{\text{penalize} \\ \text{actuator effort}}}+\frac{1}{2}\|x(N)\|_{P_{f}}^{2}$$ \\
-Control law: $u(k)=K(k) x(k)$ \\
+Control law: $u(k)=K(k) x(k)$ \quad ($K$ \textit{is time-variant})\vspace{0.1cm}
 \\
 while for $k=0, \ldots, N-1$, with $P(N)=P_{f}$
 $$K(k)=-\left(B^{\top} P(k+1) B+R\right)^{-1} B^{\top} P(k+1) A$$ and
@@ -262,10 +281,10 @@ $$K(k)=-\left(B^{\top} P(k+1) B+R\right)^{-1} B^{\top} P(k+1) A$$ and
 \end{multline*}
 Recursion for the Riccatti Matrix:
 $$P(k)=A^{\top} P(k+1) A+Q+\boldsymbol{K}(k)^{\top}B^{\top} P(k+1)A$$
-In addition:\\ 
+In addition Lyapunov function:\\ 
 $V_{0}^{*}\left(x_{0}\right)=\frac{1}{2} x_{0}^{\top} P(0) x_{0}$\\
 
-\subsection{LQ Control (no constraints, infinite horizon)}
+\subsection{LQ Control (infinite horizon)}
 System Class: $x^{+}=A x+B u$ \\
 Cost: $V(x, \underline{u})=\frac{1}{2} \sum\limits_{k=0}^{\infty}\|x(k)\|_{Q}^{2}+\|u(k)\|_{R}^{2}$ \\
 \\
@@ -298,17 +317,19 @@ polytopes QP problem (= quadratic cost with linear constraints) allows for effic
 \begin{sectionbox}
 
 \subsection{System Class}
-System class:\\ 
+Transfer function: $\frac{y(t)}{\Delta u(t-1)}=\frac{B(z^{-1})}{A(z^{-1})}$\\
+System class:
 $$A\left(z^{-1}\right) y(t)=B\left(z^{-1}\right) z^{-d} u(t-1)+C\left(z^{-1}\right) \frac{e(t)}{\Delta}$$
 \begin{itemize}
     \item Denominator: $A\left(z^{-1}\right)=1+a_{1} z^{-1}+a_{2} z^{-2}+\ldots+a_{n} z^{-n}$
     \item Denumerator: $B\left(z^{-1}\right)=1+b_{1} z^{-1}+\ldots+b_{m} z^{-m}$, $m<n$
+    \item $C\left(z^{-1}\right)$ for colored noise, in the following $C\left(z^{-1}\right)=1$
+    \item $e(t)$: white noise with zero mean
+    \\
     \item Shift operator: $z^{-k} y(t)=y(t-k)$
     \item Dead time: $z^{-d}$, in the following $d=0$
-    \item $e(t)$: white noise with zero mean
     \item $\Delta=1-z^{-1}$ (for $u(t) \leftrightarrow$ for $u(t-1)$: $\Delta=1$)
-    \item $C\left(z^{-1}\right)$ for colored noise, in the following $C\left(z^{-1}\right)=1$
-\end{itemize}
+\end{itemize} \vspace{0.1cm}
 Cost: 
 $$J=\sum_{j=1}^{N} \delta(j)(\underbrace{\hat{y}(t+j | t)}_{\substack{\text{predicted} \\ \text{output}}}-\underbrace{w(t+j)}_{\substack{\text{future ref.} \\ \text{trajectory}}})^{2}+\sum_{j=1}^{M} \lambda(j)(\Delta u(t+j-1))
 $$
@@ -322,11 +343,12 @@ $$\hat{y}(t+j | t)=G_{j}(z^{-1})\Delta u(t+j-1)+F_{j}(z^{-1})y(t)
 $$
 
 \subsection{Diophantine Equation}
+Used to get rid of \textit{inbetween predictions}.\\
 $\rightarrow$ Fewer equations than unknown variables\\
 $1=E_{j} z^{-1} \tilde{A}\left(z^{-1}\right)+z^{-j} F_{j}\left(z^{-1}\right)$ with $\tilde{A}=\Delta A$ \\ $E_{j}\left(z^{-1}\right)$: polynomial of degree $j-1$ \\ $F_{j}\left(z^{-1}\right)$: polynomial of degree of $\tilde{A}$
 \\ \\
 
-Prediction:\\ $\underline{y}=\underline{G u}+\underline{p}$ \quad($\underline{p}$ often denoted as $f$)\\
+Prediction:\\ $\underline{y}=\underline{G u}+\underline{p}$ \quad(prediction $\underline{p}$ often denoted as $f$)\\
 where the choice of $\underline{y}$ and $\underline{u}$ as:
 $$
 \begin{array}{l}{\underline{y}=[\hat{y}(t+1 | t), \hat{y}(t+2 | t), \ldots, \hat{y}(t+N | t)]^{\top}} \\ 
@@ -335,10 +357,10 @@ $$
 $$
 defines $G$ and $\underline{p}$:
 $$G=\left[\begin{array}{cccc}{g_{0}} & {0} & {\dots} & {0} \\ {g_{1}} & {g_{0}} & {\dots} & {0} \\ {\vdots} & {\vdots} & {\vdots} & {\vdots} \\ {g_{N-1}} & {g_{N-2}} & {\dots} & {g_{0}}\end{array}\right]$$
-$$\underline{p}=\underline{F}\left(z^{-1}\right) y(t)+\underline{G}^{\prime}\left(z^{-1}\right) \Delta u(t-1)$$
+$$\underline{p}=\underbrace{\underline{F}\left(z^{-1}\right) y(t)}_{\text{past values of } y}+\underbrace{\underline{G}^{\prime}\left(z^{-1}\right) \Delta u(t-1)}_{\text{future \& past control inputs}}$$
 with\\
 $G_{j}\left(z^{-1}\right)=B\left(z^{-1}\right) E_{j}\left(z^{-1}\right)$\\
-$\underline{G}^{\prime}\left(z^{-1}\right)=&\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right]$\\
+$\underline{G}^{\prime}\left(z^{-1}\right)=\left[\begin{array}{c}{\left(G_{1}\left(z^{-1}\right)-g_{0}\right) z} \\ {\left(G_{2}\left(z^{-1}\right)-g_{0}-g_{1} z^{-1}\right) z^{2}}\end{array}\right]$\\
 $\underline{F}\left(z^{-1}\right)=\left[F_{1}\left(z^{-1}\right), F_{2}\left(z^{-1}\right), \ldots, F_{N}\left(z^{-1}\right)\right]^{\top}$\\
 and $g_{j}$ $j$-th coefficients of polynomial $G_{j}$.
 
@@ -356,14 +378,17 @@ Polynomials $E_{j}\left(z^{-1}\right)$ and $F_{j}\left(z^{-1}\right)$ can be obt
 For $N=2$:\\
 $E_1(z^{-1})=1$, \quad $E_2(z^{-1})=1+2z^{-1}$\\
 \\
-$z^{-1}F_1(z^{-1})=2z^{-1}-2z^{-2}+z^{-3}$\\ \textcolor{white}{n}$\rightarrow F_1(z^{-1})=2\qquad -2z^{-1}+z^{-2}$\\
+$\rightarrow\frac{z^{-1}F_1(z^{-1})}{z^{-1}}=F_1(z^{-1})=2 -2z^{-1}+z^{-2}$\\
 \\
-$z^{-2}F_2(z^{-1})=2z^{-2}-3z^{-3}+2z^{-4}$\\ \textcolor{white}{n}$\rightarrow F_2(z^{-1})=2\qquad -3z^{-1}+2z^{-2}$\\
+$\rightarrow\frac{z^{-2}F_2(z^{-1})}{z^{-2}}=F_2(z^{-1})=2 -3z^{-1}+2z^{-2}$\\
 
 \subsection{QP Problem}
-Cost: $$J=u\left(G^{T} Q G+R\right) \underline{u}+2(\underline{p}-\underline{w})^{T} Q G \underline{u}+(\underline{p}-\underline{w})^{T} Q(\underline{p}-\underline{w})$$ is minimized by control sequence of future controls \\
+Cost (\textit{with reference} $w$): $$J=u\left(G^{T} Q G+R\right) \underline{u}+2(\underline{p}-\underline{w})^{T} Q G \underline{u}+(\underline{p}-\underline{w})^{T} Q(\underline{p}-\underline{w})$$ is minimized by control sequence of future controls \\
 $\underline{u}=-\left(G^{T} Q G+R\right)^{-1} G^{T} Q(\underline{p}-w)$\\
 where only $\underline{u}_{1}=\Delta u(t)$ is applied as control.
+\vspace{0.1cm}\\
+E.g. for horizon $N=3$:\\ $u(t)=u(t-3)+\Delta u(t-2)+\Delta u(t-1)+\Delta u(t)$\\
+where $\Delta u(t)$ is the first element of $\underline{u}$.
 
 \end{sectionbox}
 
@@ -375,8 +400,18 @@ where only $\underline{u}_{1}=\Delta u(t)$ is applied as control.
 Cost function: $F(z)$\\
 Equality constraints: $g(z)=0$\\
 Inequality constraints: $h(z)\leq 0$\\
-Active Set: $\mathcal{A}=\left\{j | \mu_{j}>0\right\}$ (\textit{set of active constraints})\\
-\\
+Active Set: $\mathcal{A}=\left\{j | \mu_{j}>0\right\}$ (\textit{set of active constraints})
+\vspace{0.1cm}\\
+\textbf{Sequential}: Recursive Elimination (\textit{find optimal} $\underline{u}$)\\
+$+$ Small NP problem\\
+$-$ Sensitive dependance for larger N
+\vspace{0.1cm}\\
+\textbf{Parallel}: Full Discretization (\textit{find optimal} $\underline{u}$ \textit{and} $\underline{x}$)\\
+$+$ Simple to implement \qquad $+$ Easier for state constraints\\
+$-$ Larger NP problem \; \qquad $-$ Many constraints
+\vspace{0.1cm}\\
+\textbf{Compromise}: Multiple Shooting
+\vspace{0.1cm}\\
 Necessary conditions for a minimum:\\
 If $z^{*}$ is feasible minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0$ and $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0\quad$ with $\quad\mu^{*} \geq 0$, $h\left(z^{*}\right) \leq 0\quad$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0\quad$ for all $i$ with Lagrange function\\ $L=F(z)+\lambda^{\top} g(z)+\mu^{\top} h(z)$ with multipliers $\lambda$ and $\mu$.\\
 
@@ -387,19 +422,9 @@ Find minimum $z^{*}$ numerically as follows
     \item Update (calculate tangent and corresponding root value):\\
     $z^{(k+1)}=z^{(k)}+\alpha^{(k)} d^{(k)}$ where\\ $d^{(k)}=-\left(\nabla^{2} F\left(z^{(k)}\right)\right)^{-1} \nabla F\left(z^{(k)}\right)$ (search direction)\\
     and step length $\alpha^{(k)}=\textrm{argmin}\ F(z^{(k)}+\alpha d^{(k)})$ (line search)
-    \item Stop if $\|\nabla F(z^{(k)})\|<\epsilon_{tol}$
+    \item Stop if $\|\nabla F(z^{(k)})\|<\epsilon_{tol}$ (\textit{after 1 iteration if} $F$ \textit{is quadratic})
 \end{itemize}\vspace{0.2cm}
 
-\subsection{Soft Constraints}
-Softened minimization problem with penalty term $l(\epsilon)$:
-$$\min_{x}f(x)+l(\epsilon), \text{ s.t. }g(x)\leq\epsilon,\;\epsilon \geq 0$$
-where $\epsilon$ defines the degree of softness.\\
-\\
-\textbf{Quadratic penalty}: $l\epsilon)=v\cdot\epsilon^{2}$ with $v>0$\\
-Feasible solution $x^*$ for the original problem is not the same for the softened problem for any $v>0$ and $\epsilon=0$.\\
-\\
-\textbf{Linear penalty}: $l(\epsilon)=u\cdot\epsilon$\\
-Same solution as original problem for $u>\mu^*\geq 0$, where $\mu^*$ is the optimal Lagrange multiplier for the original problem.
 
 \end{sectionbox}
 \begin{sectionbox}
@@ -412,7 +437,8 @@ Liner inequality constraints: $h(z)=Iz+i\leq 0$\\
 \\
 Find minimum $z^{*}$ numerically as follows
 \begin{itemize}
-    \item Initialize: Guess initial active set $\mathcal{A}_0$ for $k=0,1,2,\ldots$
+    \item Initialize: Guess initial active set $\mathcal{A}_0$ for $k=0,1,2,\ldots$\\
+    If all active constraints are known, solvable in one iteration.
     \item Update optimization variables $z$ with $\frac{\partial L}{\partial z}$.\\
     Inequality constraints from active set $\mathcal{A}_k$ are treated as equality constraints. Non-active constraints are neglected.
     \item Update active set:\\
@@ -434,27 +460,39 @@ Lagrange Function $L=F(z)+y^{\top}g(z)+w^{\top}(h(z)+s)-\mu^{\top}s$\\
 Necessary Conditions that are related to inequality constraints:\\
 $s \geq 0 $, $\mu \geq 0$ and $s^{\top}\mu=0$\\
 \\
-Relax complementary conditions $s^{\top}\mu=0$ by introducing barrier parameter $\epsilon$ to $s^{\top}\mu=\epsilon$ and solve with $\epsilon \rightarrow 0$.
+Relax complementary conditions $s^{\top}\mu=0$ by introducing barrier parameter $\epsilon$ to $s^{\top}\mu=\epsilon$ and solve with $\epsilon \rightarrow 0$.\\
+
+\subsection{Soft Constraints}
+Softened minimization problem with penalty term $l(\epsilon)$:
+$$\min_{x}f(x)+l(\epsilon), \text{ s.t. }g(x)\leq\epsilon,\;\epsilon \geq 0$$
+where $\epsilon$ defines the degree of softness.
+\vspace{0.1cm}\\
+\textbf{Quadratic penalty}: $l\epsilon)=v\cdot\epsilon^{2}$ with $v>0$\\
+Feasible solution $x^*$ for the original problem is not the same for the softened problem for any $v>0$ and $\epsilon=0$.
+\vspace{0.1cm}\\
+\textbf{Linear penalty}: $l(\epsilon)=u\cdot\epsilon$\\
+Same solution as original problem for $u>\mu^*\geq 0$, where $\mu^*$ is the optimal Lagrange multiplier for the original problem.
 \end{sectionbox}
 
 
 \section{Robust MPC}
 \begin{sectionbox}
 
-\subsection{Types of Uncertainties}
-Parametric uncertainty, modeling errors, measurement noise, etc.\\
-E.g. additive disturbance: $x^{+}=f(x,u)+w$ where $w$ is disturbance and $w\in\mathbb{W}$, where $\mathbb{W}$ is bounded.\\
 \subsection{Robust Stability}
-Under bounded small disturbances, does the state reach a small vicinity of the origin.\\
-Compare formal definitions RGAS or Practical Stability in the literature.\\
-\\
-Nominal Robust Stability only if Lyapunov Function is continuous (e.g. for linear MPC)!\\
+Does state reach vicinity of the origin under bounded small disturbances?
+\vspace{0.1cm}
+\textbf{Types of uncertainties:} Parametric uncertainty, modeling errors, etc.\\
+E.g. additive disturbance: $x^{+}=f(x,u)+w$ where $w$ is disturbance and $w\in\mathbb{W}$, where $\mathbb{W}$ is bounded.
+\vspace{0.1cm}\\
+Standard controllers (e.g. PID) have inherent robustness.\\ Nominal Robust Stability only if Lyapunov Function is continuous \\(e.g. for linear MPC).\\
 
 \subsection{Tube base MPC for Linear Systems}
 Nominal model: $z^{+}=Az+Bu$\\
-Disturbed (real) model: $x^{+}=Ax+Bu+w$\\
-Use tube $S(k)$, $k=0,1,2,\ldots$ to check constraint admissibility: $S(k)$ is a set such that all possible (apply all possible disturbances!) trajectories $x(k)$ of the disturbed system fulfill $x(k)\in\{z(k) \oplus S(k)\}$\\
-MPC feedback control: $u^{*}=v^{*}+K(x-z)$, where $K$ is found offline. Appropiate choice of $K$ reduces the size of the tube.\\
+Disturbed (real) model: $x^{+}=Ax+Bu+w$
+\vspace{0.1cm}\\
+Use tube $S(k)$, $k=0,1,2,\ldots$ to check \textbf{constraint admissibility}:\\
+Set $S(k)$ is such that all possible trajectories $x(k)$  (apply all possible disturbances) of real disturbed system fulfill $x(k)\in\{z(k) \oplus S(k)\}$, i.e. do not violate constraints.\\
+\textbf{MPC feedback control}: $u^{*}=v^{*}+K(x-z)$, where $K$ is found offline. Appropiate choice of $K$ reduces the size of the tube.\\
 Optimize cost to find $v^{*}$ such that $x^{*}$ is constraint admissible by constraint tightening using the tube.
 
 \end{sectionbox}
