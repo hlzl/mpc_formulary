@@ -153,7 +153,7 @@ with $\underline{u}^{i}=\{u(i), u(i+1), \ldots, u(N-1)\}$ \\
 Optimal cost-to-go: $V_{i}^{*}(x)=\min _{\underline{u}^{i} \in \Upsilon_{i}(x)} V_{i}\left(x, \underline{u}^{i}\right)$\quad
 with
 \begin{multline*}
-    \Upsilon_{i}(x)\coloneqq\\\left\{\underline{u}^{i} | \text{ for initial state } x(i)=x: u(k) \in \mathbb{U}, k=i ,\ldots, N-1;\\x(k) \in \mathbb{X}, k=i+1, \ldots ,N-1 ; x(N) \in \mathbb{X}_{f}\right\}
+    \Upsilon_{i}(x)\coloneqq\\\left\{\underline{u}^{i} | \text{ for initial state } x(i)=x: u(k) \in \mathbb{U}, k=i ,\ldots, N-1;\\x(k) \in \mathbb{X}, k=i+1, \ldots ,N-1 ; x(N) \in \mathbb{X}_{f}\right\}\Big\}
 \end{multline*}
 and $\Xi_{i}\coloneqq\left\{x \in \mathbb{X} | \Upsilon_{i}(x) \neq \emptyset\right\}$ \\
 \\
@@ -237,7 +237,8 @@ Assumption 5:\\
 $\mathbb{X}_f$ is control invariant, that means, if $x\in\mathbb{X}_f$ then there exists $u\in\mathbb{U}$ such that $f(x,u)\in\mathbb{X}_f$.\\ 
 
 \subsection{Stability of MPC}
-Under Assumptions 1 to 5, the equilibrium $x_{eq}$ is asymptotically stable in $\mathcal{X}_N$ for $x^{+}=f(x,\kappa_{N}(x))$.\\
+Under Assumptions 1 to 5, the equilibrium $x_{eq}$ is asymptotically stable in $\mathcal{X}_N$ for $x^{+}=f(x,\kappa_{N}(x))$.
+\vspace{0.1cm}\\
 \textit{Proof}: Choose Lyapunov function $V_N(x)=J_N(x,\underline{u}^{*})$ and show property (1) and (2) of Lyapunov direct method.\\
 
 \subsection{Recursive Feasibility}
@@ -255,7 +256,7 @@ To find feasible initial values $\mathcal{X}_1$ for an additional target constra
 \\
 To determine $\mathcal{X}_1$ given an control invariant target set $\mathcal{X}_0=\mathbb{X}_f$, put in system dynamics $x^{+}$ for $x$ in $\mathbb{X}_f$ and check if state constraints are satisfied. $\mathcal{X}_1$ is then the set with adjusted system matrix and limits.
 $$\mathcal{X}_1=\left\{\mathbf{A}\begin{bmatrix}x_1 \\ x_2 \end{bmatrix}\leq\begin{bmatrix}a \\ b \end{bmatrix}\right\}$$
-With control constraints $a_u\leq u\leq b_u$, give feasible values subject to the constraints. E.g. for state $x=\left[x_1\ x_2\ x_3\right]^{\top}$\\ $\mathcal{X}_1=\{x| a_u \leq x_1 \leq b_u,\ x_1=x_3=-x_2\}$
+With control constraints $a_u\leq u\leq b_u$, give feasible values subject to the constraints. E.g. for a state $x=\left[x_1\ x_2\ x_3\right]^{\top}$\\ $\mathcal{X}_1=\{x| a_u \leq x_1 \leq b_u,\ x_1=x_3=-x_2\}$
 
 \end{sectionbox}
 
@@ -334,7 +335,8 @@ Cost:
 $$J=\sum_{j=1}^{N} \delta(j)(\underbrace{\hat{y}(t+j | t)}_{\substack{\text{predicted} \\ \text{output}}}-\underbrace{w(t+j)}_{\substack{\text{future ref.} \\ \text{trajectory}}})^{2}+\sum_{j=1}^{M} \lambda(j)(\Delta u(t+j-1))
 $$
 \begin{itemize}
-    \item Horizons: $N$ is prediction horizon, $M$ is control horizon, in the following $M=N$
+    \item Horizons: $N$ is prediction horizon, $M$ is control horizon.\\
+    In the following $M=N$
     \item Weighting $\delta(j),\ \lambda(j)$
     \item Control input $\Delta u = u(t)-u(t-1)$
     \item Prediction from time $t$ to $t+j$:
@@ -347,7 +349,6 @@ Used to get rid of \textit{inbetween predictions}.\\
 $\rightarrow$ Fewer equations than unknown variables\\
 $1=E_{j} z^{-1} \tilde{A}\left(z^{-1}\right)+z^{-j} F_{j}\left(z^{-1}\right)$ with $\tilde{A}=\Delta A$ \\ $E_{j}\left(z^{-1}\right)$: polynomial of degree $j-1$ \\ $F_{j}\left(z^{-1}\right)$: polynomial of degree of $\tilde{A}$
 \\ \\
-
 Prediction:\\ $\underline{y}=\underline{G u}+\underline{p}$ \quad(prediction $\underline{p}$ often denoted as $f$)\\
 where the choice of $\underline{y}$ and $\underline{u}$ as:
 $$
@@ -370,10 +371,10 @@ and $g_{j}$ $j$-th coefficients of polynomial $G_{j}$.
 Polynomials $E_{j}\left(z^{-1}\right)$ and $F_{j}\left(z^{-1}\right)$ can be obtained by dividing $1$ by $\tilde{A}(z^{-1})=\Delta A(z^{-1})$ until the remainder can be factorized as $z^{-j}F_{j}(z^{-1})$, e.g.:\\
 \( \begin{aligned} (1 \qquad \ \qquad):(\overbrace{1-2z^{-1}+2z^{-2}-z^{-3}}^{\Delta A(z^{-1})})=\overbrace{\overbrace{1}^{E_1}+2z^{-1}}^{E_2}+\ \ldots \end{aligned}\\
 \begin{aligned}
-\frac{1-2 z^{-1}+2 z^{-2}-z^{-3}}{\qquad 2 z^{-1}-2 z^{-2}+z^{-3}} &  \frac{}{\ \ \qquad \qquad \Rightarrow z^{-1} F_{1}\left(z^{-1}\right)}
+\frac{1-2 z^{-1}+2 z^{-2}-z^{-3}}{\qquad 2 z^{-1}-2 z^{-2}+z^{-3}} &  \textcolor{white}{\frac{}{\ \ \qquad \qquad \textcolor{black}{\Rightarrow z^{-1} F_{1}\left(z^{-1}\right)}}}
 \end{aligned}\\
 \begin{aligned}
-\frac{\qquad 2 z^{-1}-4 z^{-2}+4 z^{-3}-2 z^{-4}}{\qquad \qquad \qquad 2z^{-2}- 3z^{-3}+2 z^{-4}} & \frac{}{\Rightarrow z^{-2} F_{2}\left(z^{-1}\right)} & \ldots \end{aligned} \)
+\frac{\qquad 2 z^{-1}-4 z^{-2}+4 z^{-3}-2 z^{-4}}{\qquad \qquad \qquad 2z^{-2}- 3z^{-3}+2 z^{-4}} & \textcolor{white}{\frac{}{\textcolor{black}{\Rightarrow z^{-2} F_{2}\left(z^{-1}\right)\qquad\ldots}}} \end{aligned} \)
 \\
 For $N=2$:\\
 $E_1(z^{-1})=1$, \quad $E_2(z^{-1})=1+2z^{-1}$\\
@@ -401,7 +402,7 @@ Cost function: $F(z)$\\
 Equality constraints: $g(z)=0$\\
 Inequality constraints: $h(z)\leq 0$\\
 Active Set: $\mathcal{A}=\left\{j | \mu_{j}>0\right\}$ (\textit{set of active constraints})
-\vspace{0.1cm}\\
+\\ \\
 \textbf{Sequential}: Recursive Elimination (\textit{find optimal} $\underline{u}$)\\
 $+$ Small NP problem\\
 $-$ Sensitive dependance for larger N
@@ -411,7 +412,7 @@ $+$ Simple to implement \qquad $+$ Easier for state constraints\\
 $-$ Larger NP problem \; \qquad $-$ Many constraints
 \vspace{0.1cm}\\
 \textbf{Compromise}: Multiple Shooting
-\vspace{0.1cm}\\
+\\ \\
 Necessary conditions for a minimum:\\
 If $z^{*}$ is feasible minimum, then $\nabla_{z} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0$ and $\nabla_{\lambda} L\left(z^{*}, \lambda^{*}, \mu^{*}\right)=0\quad$ with $\quad\mu^{*} \geq 0$, $h\left(z^{*}\right) \leq 0\quad$ and $\mu_{i}^{*} h_{i}\left(z^{*}\right)=0\quad$ for all $i$ with Lagrange function\\ $L=F(z)+\lambda^{\top} g(z)+\mu^{\top} h(z)$ with multipliers $\lambda$ and $\mu$.\\
 
@@ -422,7 +423,7 @@ Find minimum $z^{*}$ numerically as follows
     \item Update (calculate tangent and corresponding root value):\\
     $z^{(k+1)}=z^{(k)}+\alpha^{(k)} d^{(k)}$ where\\ $d^{(k)}=-\left(\nabla^{2} F\left(z^{(k)}\right)\right)^{-1} \nabla F\left(z^{(k)}\right)$ (search direction)\\
     and step length $\alpha^{(k)}=\textrm{argmin}\ F(z^{(k)}+\alpha d^{(k)})$ (line search)
-    \item Stop if $\|\nabla F(z^{(k)})\|<\epsilon_{tol}$ (\textit{after 1 iteration if} $F$ \textit{is quadratic})
+    \item Stop if $\|\nabla F(z^{(k)})\|<\epsilon_{tol}$ (\textit{after one iteration if} $F$ \textit{is quadratic})
 \end{itemize}\vspace{0.2cm}
 
 
