@@ -106,7 +106,9 @@
 	\renewcommand{\headrulewidth}{0.0pt} %obere Linie ausblenden
 	\renewcommand{\footrulewidth}{0.1pt} %obere Linie ausblenden
 
-	\fancyfoot[R]{\EngGer{Last revised}{Stand}: \themydate \qquad \thepage/\pageref{LastPage}}
+	%\fancyfoot[R]{\EngGer{Last revised}{Stand}: \themydate \qquad \thepage/\pageref{LastPage}}
+	% Changed to the following as \pageref did not work:
+	\fancyfoot[R]{\EngGer{Last revised}{Stand}: \themydate \qquad \thepage/2}
 	\fancyfoot[L]{Homepage: \url{\thewebsite} -- \EngGer{Please report mistakes \emph{immediately}}{Fehler bitte \emph{sofort} melden}.}
 
 
